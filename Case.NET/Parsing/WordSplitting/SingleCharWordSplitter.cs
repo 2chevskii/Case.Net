@@ -1,55 +1,45 @@
-﻿using Case.NET.Parsing.Tokens;
-
 namespace Case.NET.Parsing.WordSplitting
 {
-    public abstract class SingleCharWordSplitter : IWordSplitter
+    public class SingleCharWordSplitter : IWordSplitter
     {
-        public abstract char SplitChar { get; }
+        public static readonly SingleCharWordSplitter Dash       = new SingleCharWordSplitter('-');
+        public static readonly SingleCharWordSplitter Underscore = new SingleCharWordSplitter('_');
+        public static readonly SingleCharWordSplitter Dot        = new SingleCharWordSplitter('.');
+        public static readonly SingleCharWordSplitter Whitespace = new SingleCharWordSplitter(' ');
+        public static readonly SingleCharWordSplitter Tab        = new SingleCharWordSplitter('\t');
+        public static readonly SingleCharWordSplitter LineFeed   = new SingleCharWordSplitter('\n');
+        public static readonly SingleCharWordSplitter CaretReturn =
+            new SingleCharWordSplitter('\r');
+        public static readonly SingleCharWordSplitter Backslash = new SingleCharWordSplitter('\\');
+        public static readonly SingleCharWordSplitter Forwardslash =
+            new SingleCharWordSplitter('/');
 
-        public bool CanSplit(
-            string value,
-            int index,
-            int bufferedCharCount,
-            out bool skipChar,
-            out SplitToken splitToken
-        )
+        public readonly char SplitChar;
+
+        public SingleCharWordSplitter(char splitChar)
         {
-            char c = value[index];
+            SplitChar = splitChar;
+        }
 
-            if (c != SplitChar)
+        public int TryFindSplitIndex(string value, int startAt, out bool skipIndexChar)
+        {
+            for (int i = startAt; i < value.Length; i++)
             {
-                skipChar = false;
-                splitToken = default;
+                char c = value[i];
 
-                return false;
+                if (c != SplitChar)
+                {
+                    continue;
+                }
+
+                skipIndexChar = true;
+
+                return i;
             }
 
-            char pc = index != 0 ? value[index - 1] : char.MinValue;
+            skipIndexChar = false;
 
-            if (!char.IsLetterOrDigit(pc))
-            {
-                skipChar = true;
-                splitToken = new SplitToken(
-                    index,
-                    c.ToString(),
-                    1,
-                    true,
-                    false
-                );
-
-                return false;
-            }
-
-            skipChar = true;
-            splitToken = new SplitToken(
-                index,
-                c.ToString(),
-                1,
-                true,
-                true
-            );
-
-            return true;
+            return -1;
         }
     }
 }
