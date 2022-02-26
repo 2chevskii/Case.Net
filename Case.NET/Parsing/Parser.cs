@@ -13,9 +13,10 @@ namespace Case.NET.Parsing
         private static readonly ICharFilter[] EmptyCharFilterArray = Array.Empty<ICharFilter>();
 
         protected readonly IWordSplitter[] wordSplitters;
-        protected readonly ICharFilter[]   charFilters;
-        protected readonly int[]           splitIndexArray; // those two arrays are used for memoizing values of the current pass
-        protected readonly bool[]          skipCharsArray;  // therefore - this Parser impl is not thread-safe
+        protected readonly ICharFilter[] charFilters;
+        protected readonly int[]
+            splitIndexArray; // those two arrays are used for memoizing values of the current pass
+        protected readonly bool[] skipCharsArray; // therefore - this Parser impl is not thread-safe
 
         public IReadOnlyCollection<IWordSplitter> WordSplitters => wordSplitters;
         public IReadOnlyCollection<ICharFilter> CharFilters => charFilters;
@@ -48,11 +49,7 @@ namespace Case.NET.Parsing
             Utils.FillArray(splitIndexArray, -1);
         }
 
-        public virtual ICollection<IToken> Parse(
-            string value,
-            bool includeSplitTokens,
-            bool returnSourceIfNoMatches
-        )
+        public virtual ICollection<IToken> Parse(string value, bool returnSourceIfNoMatches)
         {
             List<IToken> tokens = new List<IToken>();
 
