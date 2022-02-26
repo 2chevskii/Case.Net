@@ -84,11 +84,11 @@ namespace Case.NET.Parsing
                 int minIndex = -1;
                 bool doSkip = false;
 
-                for (int i = 0; i < splitIndexArray.Length; i++)
+                for (int i = 0; i < splitIndexArray.Length; i++) // FIXME: start from second element
                 {
                     int index = splitIndexArray[i];
 
-                    if (index != -1 && index < minIndex)
+                    if (index != -1 && (minIndex == -1 || index < minIndex))
                     {
                         minIndex = index;
                         doSkip = skipCharsArray[i];
@@ -101,9 +101,10 @@ namespace Case.NET.Parsing
 
                 WordToken word = new WordToken(startAt, substring);
 
+                tokens.Add(word);
+
                 if (minIndex != -1)
                 {
-                    tokens.Add(word);
                     startAt = doSkip ? minIndex + 1 : minIndex;
                 }
                 else
