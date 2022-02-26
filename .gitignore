@@ -1,0 +1,7 @@
+.vs/
+.idea/
+.vscode/
+_ReSharper.Caches/
+bin/
+obj/
+TestResults/
