@@ -49,7 +49,7 @@ namespace Case.NET.Parsing
             Utils.FillArray(splitIndexArray, -1);
         }
 
-        public virtual ICollection<IToken> Parse(string value, bool returnSourceIfNoMatches)
+        public virtual IList<IToken> Parse(string value, bool returnSourceIfNoMatches)
         {
             List<IToken> tokens = new List<IToken>();
 

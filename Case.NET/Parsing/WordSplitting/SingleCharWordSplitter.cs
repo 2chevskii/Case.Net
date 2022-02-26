@@ -13,6 +13,7 @@ namespace Case.NET.Parsing.WordSplitting
         public static readonly SingleCharWordSplitter Backslash = new SingleCharWordSplitter('\\');
         public static readonly SingleCharWordSplitter Forwardslash =
             new SingleCharWordSplitter('/');
+        public static readonly SingleCharWordSplitter Comma = new SingleCharWordSplitter(',');
 
         public readonly char SplitChar;
 

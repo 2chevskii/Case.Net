@@ -13,7 +13,8 @@ namespace Case.NET.Parsing.Filters
                 ' ',
                 '\t',
                 '\n',
-                '\r'
+                '\r',
+                ','
             }
         );
 

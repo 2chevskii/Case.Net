@@ -5,7 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Parsing\WordSplitting\" />
     <Folder Include="Parsing\Tokens\" />
   </ItemGroup>
 
