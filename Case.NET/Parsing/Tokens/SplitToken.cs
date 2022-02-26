@@ -1,5 +1,8 @@
-﻿namespace Case.NET.Parsing.Tokens
+using System;
+
+namespace Case.NET.Parsing.Tokens
 {
+    [Obsolete("Currently has no use")]
     public readonly struct SplitToken : IToken
     {
         public int Index { get; }
