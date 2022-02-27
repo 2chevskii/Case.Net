@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 using Case.NET.Emit.Concat;
@@ -13,6 +12,17 @@ namespace Case.NET
 {
     public class CaseConverter : ICaseConverter
     {
+        public static readonly CaseConverter CamelCase = new CaseConverter(
+            Parsing.Parser.Universal,
+            new CamelCaseWordEmitter(),
+            new EmptyWordConcatenator()
+        );
+        public static readonly CaseConverter PascalCase = new CaseConverter(
+            Parsing.Parser.Universal,
+            StateLessWordEmitter.FirstUpper,
+            new EmptyWordConcatenator()
+        );
+
         public IParser Parser => parser;
         public IWordEmitter WordEmitter => wordEmitter;
         public IWordConcatenator WordConcatenator => wordConcatenator;
