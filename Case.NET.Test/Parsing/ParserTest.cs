@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using Case.NET.Parsing;
 using Case.NET.Parsing.Tokens;
@@ -7,56 +7,85 @@ using Case.NET.Parsing.WordSplitting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using Newtonsoft.Json;
-
 namespace Case.NET.Test.Parsing
 {
     [TestClass]
     public class ParserTest
     {
-        [DataTestMethod]
-        [DynamicData(nameof(GetTestParseData), DynamicDataSourceType.Method)]
-        public void TestParse(IParser parser, string data, WordToken[] expected)
+        private static readonly TestString[] CamelCasedStrings = {
+            new TestString("helloWorld", new WordToken(0, "hello"), new WordToken(5, "World")),
+            new TestString(
+                "fooBarBaz",
+                new WordToken(0, "foo"),
+                new WordToken(3, "Bar"),
+                new WordToken(6, "Baz")
+            ),
+            new TestString("PascalCase", new WordToken(0, "Pascal"), new WordToken(6, "Case"))
+        };
+        private static readonly TestString[] KebabCasedStrings = {
+            new TestString("hello-world", new WordToken(0, "hello"), new WordToken(6, "world")),
+            new TestString(
+                "foo-bar-baz",
+                new WordToken(0, "foo"),
+                new WordToken(4, "bar"),
+                new WordToken(8, "baz")
+            ),
+            new TestString(
+                "Train-Cased-String",
+                new WordToken(0, "Train"),
+                new WordToken(6, "Cased"),
+                new WordToken(12, "String")
+            )
+        };
+        private static readonly TestString[] SnakeCasedStrings = {
+            new TestString("hello_world", new WordToken(0, "hello"), new WordToken(6, "world"))
+        };
+
+        public static IEnumerable<object[]> GetTestParseDataValidCasing()
         {
-            var tokens = parser.Parse(data, false);
+            yield return new object[] {
+                new Parser(CamelCaseWordSplitter.Instance),
+                CamelCasedStrings
+            };
 
-            for (var i = 0; i < tokens.Count; i++)
+            yield return new object[] {
+                new Parser(SingleCharWordSplitter.Dash),
+                KebabCasedStrings
+            };
+
+            yield return new object[] {
+                new Parser(SingleCharWordSplitter.Underscore),
+                SnakeCasedStrings
+            };
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(GetTestParseDataValidCasing), DynamicDataSourceType.Method)]
+        public void TestParse(IParser parser, TestString[] data)
+        {
+            for (var i = 0; i < data.Length; i++)
             {
-                var token = (WordToken) tokens[i];
+                TestString currentData = data[i];
 
-                var expectedToken = expected[i];
+                string value = currentData.Value;
+                WordToken[] expected = currentData.ExpectedTokens;
 
-                Assert.AreEqual(expectedToken, token);
+                var tokens = parser.Parse(value);
+
+                CollectionAssert.AreEqual(expected, tokens.Cast<WordToken>().ToArray());
             }
         }
 
-        public static IEnumerable<object[]> GetTestParseData()
+        public readonly struct TestString
         {
-            yield return new object[] {
-                new Parser(CamelCaseWordSplitter.Instance),
-                "hello, world",
-                new[] {new WordToken(0, "hello, world")}
-            };
+            public readonly string      Value;
+            public readonly WordToken[] ExpectedTokens;
 
-            yield return new object[] {
-                new Parser(CamelCaseWordSplitter.Instance),
-                "helloWorld",
-                new[] {
-                    new WordToken(0, "hello"),
-                    new WordToken(5, "World")
-                }
-            };
-
-            yield return new object[] {
-                new Parser(CamelCaseWordSplitter.Instance),
-                "AnotherHelloWorld",
-                new[] {
-                    new WordToken(0, "Another"),
-                    new WordToken(7, "Hello"),
-                    new WordToken(12, "World")
-                }
-            };
-
+            public TestString(string value, params WordToken[] expectedTokens)
+            {
+                Value = value;
+                ExpectedTokens = expectedTokens;
+            }
         }
     }
 }

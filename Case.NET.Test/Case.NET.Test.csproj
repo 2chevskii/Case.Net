@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFrameworks>net48;netcoreapp3.1</TargetFrameworks>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
@@ -13,12 +13,13 @@
     <PackageReference Include="coverlet.collector" Version="3.1.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Case.NET\Case.NET.csproj" />
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <ProjectReference Include="..\Case.NET\Case.NET.csproj" TargetFramework="netstandard2.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Parsing\" />
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+    <ProjectReference Include="..\Case.NET\Case.NET.csproj" TargetFramework="netstandard2.1" />
   </ItemGroup>
 
 </Project>
