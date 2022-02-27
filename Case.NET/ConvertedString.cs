@@ -6,7 +6,7 @@ using Case.NET.Parsing.Tokens;
 
 namespace Case.NET
 {
-    public readonly struct ConvertedString
+    public readonly struct ConvertedString // TODO: rename ConvertedString -> CasedString
     {
         public readonly string                      OriginalValue;
         public readonly string                      Value;
