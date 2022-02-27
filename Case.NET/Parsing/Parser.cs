@@ -89,7 +89,7 @@ namespace Case.NET.Parsing
         }
 
 #if NETSTANDARD2_0
-        public virtual IList<IToken> Parse(in string value /*, bool returnSourceIfNoMatches*/)
+        public virtual IList<IToken> Parse(string value)
         {
             List<IToken> tokens = new List<IToken>();
 
@@ -118,14 +118,14 @@ namespace Case.NET.Parsing
                     skipCharsArray[i] = skip;
                 }
 
-                int minIndex = -1;
-                bool doSkip = false;
+                int minIndex = splitIndexArray[0];
+                bool doSkip = skipCharsArray[0];
 
-                for (int i = 0; i < splitIndexArray.Length; i++) // FIXME: start from second element
+                for (int i = 1; i < splitIndexArray.Length; i++)
                 {
                     int index = splitIndexArray[i];
 
-                    if (index != -1 && (minIndex == -1 || index < minIndex))
+                    if (index != -1 && index < minIndex)
                     {
                         minIndex = index;
                         doSkip = skipCharsArray[i];
@@ -149,12 +149,7 @@ namespace Case.NET.Parsing
                     startAt = value.Length;
                 }
             }
-
-            //if (tokens.Count == 0 && returnSourceIfNoMatches)
-            //{
-            //    tokens.Add(new WordToken(0, value));
-            //}
-
+            
             return tokens;
         }
 #endif
