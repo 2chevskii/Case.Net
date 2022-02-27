@@ -30,7 +30,7 @@ namespace Case.NET.Emit.Words
                 return token.Value.ToUpperInvariant();
             }
 
-            return char.ToLowerInvariant(token.Value[0]) +
+            return char.ToUpperInvariant(token.Value[0]) +
                    token.Value.Substring(1).ToLowerInvariant();
         }
     }
