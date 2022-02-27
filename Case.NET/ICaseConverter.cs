@@ -10,7 +10,7 @@ namespace Case.NET
 {
     public interface ICaseConverter
     {
-        IReadOnlyCollection<IParser> Parsers { get; }
+        IParser Parser { get; }
         IWordEmitter WordEmitter { get; }
         IWordConcatenator WordConcatenator { get; }
         IPrefixEmitter PrefixEmitter { get; }
@@ -30,6 +30,6 @@ namespace Case.NET
         /// </summary>
         /// <param name="tokens"></param>
         /// <returns></returns>
-        ConvertedString ConvertCase(ICollection<IToken> tokens);
+        ConvertedString ConvertCase(IList<IToken> tokens);
     }
 }
