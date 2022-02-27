@@ -24,6 +24,7 @@ it would be quite useful to write something which will be reliable and extensibl
   - Modules are dead simple to implement
 - Performant:
   - Default modules' implementation aims to be as much GC-friendly as possible
+  - No `Regex` usage, tokenization done by simple condition-based lexers choosing leftmost overlapped sequence (smallest possible token size is chosen)
 
 ## Usage
 
