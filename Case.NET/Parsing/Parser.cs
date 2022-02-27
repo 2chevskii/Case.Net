@@ -125,7 +125,7 @@ namespace Case.NET.Parsing
                 {
                     int index = splitIndexArray[i];
 
-                    if (index != -1 && index < minIndex)
+                    if (index != -1 && (minIndex == -1 || index < minIndex))
                     {
                         minIndex = index;
                         doSkip = skipCharsArray[i];

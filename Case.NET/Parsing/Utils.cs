@@ -4,11 +4,11 @@ namespace Case.NET.Parsing
 {
     internal static class Utils
     {
-        internal static bool Contains(IReadOnlyList<char> array, char c)
+        internal static bool Contains(IReadOnlyList<char> list, char c)
         {
-            for (var i = 0; i < array.Count; i++)
+            for (var i = 0; i < list.Count; i++)
             {
-                if (array[i] == c)
+                if (list[i] == c)
                     return true;
             }
 
