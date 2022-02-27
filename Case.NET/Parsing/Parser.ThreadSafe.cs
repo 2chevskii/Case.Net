@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using Case.NET.Parsing.Filters;
 using Case.NET.Parsing.Tokens;
@@ -8,57 +7,16 @@ using Case.NET.Parsing.WordSplitting;
 
 namespace Case.NET.Parsing
 {
-    public partial class Parser : IParser
+    public partial class Parser
     {
-        private static readonly ICharFilter[] EmptyCharFilterArray = Array.Empty<ICharFilter>();
-
-        protected readonly IWordSplitter[] wordSplitters;
-        protected readonly ICharFilter[]   charFilters;
-
-#if NETSTANDARD2_0
-        protected readonly int[] splitIndexArray; // those two arrays are used for memoizing values of the current pass
-        protected readonly bool[] skipCharsArray; // therefore - this Parser impl is not thread-safe
-#endif
-
-        public static Parser Universal =>
-            throw new NotImplementedException("Implement me you dumb fuck");
-
-        public IReadOnlyCollection<IWordSplitter> WordSplitters => wordSplitters;
-        public IReadOnlyCollection<ICharFilter> CharFilters => charFilters;
-
-        public Parser(params IWordSplitter[] wordSplitters) : this(
-            (IEnumerable<IWordSplitter>) wordSplitters
-        ) { }
-
-        public Parser(IEnumerable<IWordSplitter> wordSplitters) : this(wordSplitters, null) { }
-
-        public Parser(
-            IEnumerable<IWordSplitter> wordSplitters,
-            IEnumerable<ICharFilter> charFilters
-        )
-        {
-            this.wordSplitters = wordSplitters?.ToArray() ??
-                                 throw new ArgumentNullException(nameof(wordSplitters));
-
-            if (this.wordSplitters.Length == 0)
-            {
-                throw new ArgumentException(
-                    "Word splitters array cannot be empty",
-                    nameof(wordSplitters)
-                );
-            }
-
-            this.charFilters = charFilters?.ToArray() ?? EmptyCharFilterArray;
-#if NETSTANDARD2_0
-            splitIndexArray = new int[this.wordSplitters.Length];
-            skipCharsArray = new bool[this.wordSplitters.Length];
-            Utils.FillArray(splitIndexArray, -1);
-#endif
-        }
-
-#if NETSTANDARD2_0
+#if NETSTANDARD2_1_OR_GREATER
         public virtual IList<IToken> Parse(in string value/*, bool returnSourceIfNoMatches*/)
         {
+            Span<int> splitIndexArray = stackalloc int[wordSplitters.Length];
+            Span<bool> skipCharsArray = stackalloc bool[wordSplitters.Length];
+
+            splitIndexArray.Fill(-1);
+
             List<IToken> tokens = new List<IToken>();
 
             int startAt = 0;

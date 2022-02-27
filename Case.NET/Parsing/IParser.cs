@@ -12,6 +12,6 @@ namespace Case.NET.Parsing
         IReadOnlyCollection<ICharFilter> CharFilters { get; }
 
         //ICollection<IToken> Parse(string value, bool includeSplitTokens, bool returnSourceIfNoMatches);
-        IList<IToken> Parse(string value, bool returnSourceIfNoMatches); // fixme: bool probably should be always true, dunno
+        IList<IToken> Parse(in string value/*, bool returnSourceIfNoMatches*/); // fixme: bool probably should be always true, dunno
     }
 }
