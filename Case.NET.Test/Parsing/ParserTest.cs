@@ -59,8 +59,20 @@ namespace Case.NET.Test.Parsing
             };
         }
 
+        public static IEnumerable<object[]> GetTestParseDataNoMatch()
+        {
+            yield return new object[] {
+                new Parser(CamelCaseWordSplitter.Instance),
+                new[] {
+                    new TestString("hello, world", new WordToken(0, "hello, world")),
+                    new TestString("hello_world", new WordToken(0, "hello_world"))
+                }
+            };
+        }
+
         [DataTestMethod]
         [DynamicData(nameof(GetTestParseDataValidCasing), DynamicDataSourceType.Method)]
+        [DynamicData(nameof(GetTestParseDataNoMatch), DynamicDataSourceType.Method)]
         public void TestParse(IParser parser, TestString[] data)
         {
             for (var i = 0; i < data.Length; i++)

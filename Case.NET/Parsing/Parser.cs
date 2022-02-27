@@ -8,6 +8,14 @@ using Case.NET.Parsing.WordSplitting;
 
 namespace Case.NET.Parsing
 {
+#if NETSTANDARD2_0
+    /// <summary>
+    /// Basic parser implementation. Only produces <see cref="WordToken"/> at the moment
+    /// <para>
+    /// NOT thread safe. Use single instance for each thread
+    /// </para>
+    /// </summary> 
+#endif
     public partial class Parser : IParser
     {
         private static readonly ICharFilter[] EmptyCharFilterArray = Array.Empty<ICharFilter>();
@@ -16,12 +24,36 @@ namespace Case.NET.Parsing
         protected readonly ICharFilter[]   charFilters;
 
 #if NETSTANDARD2_0
-        protected readonly int[] splitIndexArray; // those two arrays are used for memoizing values of the current pass
+        protected readonly int[]
+            splitIndexArray; // those two arrays are used for memoizing values of the current pass
         protected readonly bool[] skipCharsArray; // therefore - this Parser impl is not thread-safe
 #endif
 
-        public static Parser Universal =>
-            throw new NotImplementedException("Implement me you dumb fuck");
+#if NETSTANDARD2_1_OR_GREATER
+        public static readonly Parser Universal = new Parser(
+            new IWordSplitter[] {
+                CamelCaseWordSplitter.Instance,
+                UpperLowerCaseWordSplitter.Instance,
+                SingleCharWordSplitter.Dash,
+                SingleCharWordSplitter.Underscore,
+                SingleCharWordSplitter.Whitespace,
+            },
+            new ICharFilter[] {CharFilter.CommonDelimiters}
+        );
+#endif
+
+#if NETSTANDARD2_0
+        public static Parser Universal => new Parser(
+            new IWordSplitter[] {
+                CamelCaseWordSplitter.Instance,
+                UpperLowerCaseWordSplitter.Instance,
+                SingleCharWordSplitter.Dash,
+                SingleCharWordSplitter.Underscore,
+                SingleCharWordSplitter.Whitespace,
+            },
+            new ICharFilter[] {CharFilter.CommonDelimiters}
+        );
+#endif
 
         public IReadOnlyCollection<IWordSplitter> WordSplitters => wordSplitters;
         public IReadOnlyCollection<ICharFilter> CharFilters => charFilters;
@@ -57,7 +89,7 @@ namespace Case.NET.Parsing
         }
 
 #if NETSTANDARD2_0
-        public virtual IList<IToken> Parse(in string value/*, bool returnSourceIfNoMatches*/)
+        public virtual IList<IToken> Parse(in string value /*, bool returnSourceIfNoMatches*/)
         {
             List<IToken> tokens = new List<IToken>();
 

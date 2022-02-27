@@ -6,12 +6,21 @@ using Case.NET.Parsing.WordSplitting;
 
 namespace Case.NET.Parsing
 {
+    /// <summary>
+    /// Type, implementing parser for string value, which produces sequence of <see cref="IToken"/>
+    /// </summary>
     public interface IParser
     {
+        /// <summary>
+        /// Contains all <see cref="IWordSplitter"/> objects, used by this parser
+        /// </summary>
         IReadOnlyCollection<IWordSplitter> WordSplitters { get; }
+
+        /// <summary>
+        /// Contains all <see cref="ICharFilter"/> objects, used by this parser
+        /// </summary>
         IReadOnlyCollection<ICharFilter> CharFilters { get; }
 
-        //ICollection<IToken> Parse(string value, bool includeSplitTokens, bool returnSourceIfNoMatches);
-        IList<IToken> Parse(in string value/*, bool returnSourceIfNoMatches*/); // fixme: bool probably should be always true, dunno
+        IList<IToken> Parse(in string value);
     }
 }

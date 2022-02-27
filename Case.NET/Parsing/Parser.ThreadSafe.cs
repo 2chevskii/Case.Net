@@ -1,12 +1,23 @@
+#if NETSTANDARD2_1_OR_GREATER
 using System;
 using System.Collections.Generic;
 
 using Case.NET.Parsing.Filters;
 using Case.NET.Parsing.Tokens;
 using Case.NET.Parsing.WordSplitting;
+#endif
 
 namespace Case.NET.Parsing
 {
+#if NETSTANDARD2_1_OR_GREATER
+    /// <summary>
+    /// Basic parser implementation. Only produces <see cref="WordToken"/> at the moment
+    /// <para>
+    /// Thread safe. Uses stackalloc'ed arrays
+    /// inside <see cref="Parse"/> method instead of member fields
+    /// </para>
+    /// </summary> 
+#endif
     public partial class Parser
     {
 #if NETSTANDARD2_1_OR_GREATER
