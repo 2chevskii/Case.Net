@@ -11,7 +11,11 @@ namespace Case.NET.Emit.PostProcessing
 
         public string GetPrefix(IList<WordToken> tokens, string value)
         {
-            if (!value.StartsWith(UNDERSCORE_CHAR))
+#if NETSTANDARD2_1_OR_GREATER
+            if (value.StartsWith(UNDERSCORE_CHAR))
+#else
+            if(value.StartsWith(UNDERSCORE_STR))
+#endif
             {
                 return UNDERSCORE_STR;
             }
