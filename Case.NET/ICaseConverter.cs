@@ -17,19 +17,20 @@ namespace Case.NET
         ISuffixEmitter SuffixEmitter { get; }
 
         /// <summary>
-        /// Converts given <paramref name="value"/> into <see cref="ConvertedString"/>
+        /// Converts given <paramref name="value"/> into <see cref="CasedString"/>
         /// using present parsers and emitters
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        ConvertedString ConvertCase(string value);
+        CasedString ConvertCase(string value);
 
         /// <summary>
         /// Does the same as <see cref="ConvertCase(string)"/>, but skips parsing stage
         /// using already parsed <paramref name="tokens"/>
         /// </summary>
         /// <param name="tokens"></param>
+        /// <param name="originalValue">Used only for constructing <see cref="CasedString"/> (<see cref="CasedString.OriginalValue"/>)</param>
         /// <returns></returns>
-        ConvertedString ConvertCase(IList<IToken> tokens);
+        CasedString ConvertCase(IReadOnlyList<WordToken> tokens, string originalValue);
     }
 }

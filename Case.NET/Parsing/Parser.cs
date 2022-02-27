@@ -89,9 +89,9 @@ namespace Case.NET.Parsing
         }
 
 #if NETSTANDARD2_0
-        public virtual IList<IToken> Parse(string value)
+        public virtual IReadOnlyList<WordToken> Parse(string value)
         {
-            List<IToken> tokens = new List<IToken>();
+            List<WordToken> tokens = new List<WordToken>();
 
             int startAt = 0;
 

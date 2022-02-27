@@ -4,32 +4,32 @@ namespace Case.NET.Extensions
 {
     public static class StringExtensions
     {
-        public static ConvertedString ToCamelCase(this string self)
+        public static CasedString ToCamelCase(this string self)
         {
             return CaseConverter.CamelCase.ConvertCase(self);
         }
 
-        public static ConvertedString ToPascalCase(this string self)
+        public static CasedString ToPascalCase(this string self)
         {
             return CaseConverter.PascalCase.ConvertCase(self);
         }
 
-        public static ConvertedString ToSnakeCase(this string self)
+        public static CasedString ToSnakeCase(this string self)
         {
             throw new NotImplementedException();
         }
 
-        public static ConvertedString ToAllUpperCase(this string self)
+        public static CasedString ToAllUpperCase(this string self)
         {
             throw new NotImplementedException();
         }
 
-        public static ConvertedString ToKebabCase(this string self)
+        public static CasedString ToKebabCase(this string self)
         {
             throw new NotImplementedException();
         }
 
-        public static ConvertedString ToTrainCase(this string self)
+        public static CasedString ToTrainCase(this string self)
         {
             throw new NotImplementedException();
         }

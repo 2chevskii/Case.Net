@@ -6,6 +6,6 @@ namespace Case.NET.Emit.Words
 {
     public interface IWordEmitter
     {
-        string Emit(IList<WordToken> words, int wordIndex);
+        string Emit(IReadOnlyList<WordToken> words, int wordIndex);
     }
 }

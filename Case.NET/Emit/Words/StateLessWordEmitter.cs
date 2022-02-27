@@ -47,7 +47,7 @@ namespace Case.NET.Emit.Words
             EmitterFunc = emitterFunc ?? throw new ArgumentNullException(nameof(emitterFunc));
         }
 
-        public string Emit(IList<WordToken> words, int wordIndex)
+        public string Emit(IReadOnlyList<WordToken> words, int wordIndex)
         {
             return EmitterFunc(words[wordIndex]);
         }

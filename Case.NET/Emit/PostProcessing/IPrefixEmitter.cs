@@ -7,9 +7,8 @@ namespace Case.NET.Emit.PostProcessing
 {
     public interface IPrefixEmitter
     {
-        string GetPrefix(IList<WordToken> tokens, string value);
+        string GetPrefix(IReadOnlyList<WordToken> tokens, string value);
 
-        // TODO: Implement
-        //string GetPrefix(IList<WordToken> tokens, StringBuilder builder);
+        string GetPrefix(IReadOnlyList<WordToken> tokens, StringBuilder builder);
     }
 }

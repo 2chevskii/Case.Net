@@ -7,9 +7,8 @@ namespace Case.NET.Emit.PostProcessing
 {
     public interface ISuffixEmitter
     {
-        string GetSuffix(IList<WordToken> tokens, string value);
+        string GetSuffix(IReadOnlyList<WordToken> tokens, string value);
 
-        // TODO: Implement
-        //string GetSuffix(IList<WordToken> tokens, StringBuilder builder);
+        string GetSuffix(IReadOnlyList<WordToken> tokens, StringBuilder builder);
     }
 }

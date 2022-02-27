@@ -1,22 +1,26 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using Case.NET.Parsing.Tokens;
 
 namespace Case.NET
 {
-    public readonly struct ConvertedString // TODO: rename ConvertedString -> CasedString
+    public readonly struct CasedString
     {
-        public readonly string                      OriginalValue;
-        public readonly string                      Value;
-        public readonly IReadOnlyCollection<IToken> Tokens;
-        public readonly ICaseConverter              Converter;
+        public readonly string                   OriginalValue;
+        public readonly string                   Value;
+        public readonly IReadOnlyList<WordToken> Tokens;
+        public readonly ICaseConverter           Converter;
 
         public int OriginalLength => OriginalValue.Length;
         public int Length => Value.Length;
 
-        public ConvertedString(string originalValue, string value, IReadOnlyCollection<IToken> tokens, ICaseConverter converter)
+        public CasedString(
+            string originalValue,
+            string value,
+            IReadOnlyList<WordToken> tokens,
+            ICaseConverter converter
+        )
         {
             OriginalValue = originalValue ?? throw new ArgumentNullException(nameof(originalValue));
             Value = value ?? throw new ArgumentNullException(nameof(value));
@@ -24,19 +28,19 @@ namespace Case.NET
             Converter = converter ?? throw new ArgumentNullException(nameof(converter));
         }
 
-        public static implicit operator string(ConvertedString convertedString)
+        public static implicit operator string(CasedString casedString)
         {
-            return convertedString.Value;
+            return casedString.Value;
         }
 
-        public static explicit operator ConvertedString((string, ICaseConverter) tuple)
+        public static explicit operator CasedString((string, ICaseConverter) tuple)
         {
             (string value, ICaseConverter converter) = tuple;
 
             return Create(value, converter);
-        } 
+        }
 
-        public static ConvertedString Create(string value, ICaseConverter converter)
+        public static CasedString Create(string value, ICaseConverter converter)
         {
             if (converter == null)
             {
@@ -45,7 +49,5 @@ namespace Case.NET
 
             return converter.ConvertCase(value);
         }
-
-        public IEnumerable<WordToken> GetWords() => Tokens.OfType<WordToken>();
     }
 }

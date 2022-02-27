@@ -6,7 +6,7 @@ namespace Case.NET.Emit.Words
 {
     public class CamelCaseWordEmitter : IWordEmitter
     {
-        public string Emit(IList<WordToken> tokens, int index)
+        public string Emit(IReadOnlyList<WordToken> tokens, int index)
         {
             WordToken token = tokens[index];
 

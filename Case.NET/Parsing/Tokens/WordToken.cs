@@ -1,6 +1,6 @@
-﻿namespace Case.NET.Parsing.Tokens
+namespace Case.NET.Parsing.Tokens
 {
-    public readonly struct WordToken : IToken
+    public readonly struct WordToken
     {
         public int Index { get; }
         public int Length { get; }

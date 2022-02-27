@@ -14,7 +14,7 @@ namespace Case.NET.Test
         {
             string data = "snake_case";
 
-            ConvertedString result = CaseConverter.CamelCase.ConvertCase(data);
+            CasedString result = CaseConverter.CamelCase.ConvertCase(data);
 
             string value = result.Value;
 

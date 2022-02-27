@@ -21,6 +21,6 @@ namespace Case.NET.Parsing
         /// </summary>
         IReadOnlyCollection<ICharFilter> CharFilters { get; }
 
-        IList<IToken> Parse(string value);
+        IReadOnlyList<WordToken> Parse(string value);
     }
 }

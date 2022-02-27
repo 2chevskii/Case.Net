@@ -6,7 +6,7 @@ namespace Case.NET.Parsing
     {
         internal static bool Contains(IReadOnlyList<char> array, char c)
         {
-            for (var i = array.Count - 1; i >= 0; i--)
+            for (var i = 0; i < array.Count; i++)
             {
                 if (array[i] == c)
                     return true;

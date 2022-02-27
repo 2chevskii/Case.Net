@@ -21,14 +21,14 @@ namespace Case.NET.Parsing
     public partial class Parser
     {
 #if NETSTANDARD2_1_OR_GREATER
-        public virtual IList<IToken> Parse(string value)
+        public virtual IReadOnlyList<WordToken> Parse(string value)
         {
             Span<int> splitIndexArray = stackalloc int[wordSplitters.Length];
             Span<bool> skipCharsArray = stackalloc bool[wordSplitters.Length];
 
             splitIndexArray.Fill(-1);
 
-            List<IToken> tokens = new List<IToken>();
+            List<WordToken> tokens = new List<WordToken>();
 
             int startAt = 0;
 

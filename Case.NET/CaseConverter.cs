@@ -23,102 +23,84 @@ namespace Case.NET
             new EmptyWordConcatenator()
         );
 
-        public IParser Parser => parser;
-        public IWordEmitter WordEmitter => wordEmitter;
-        public IWordConcatenator WordConcatenator => wordConcatenator;
-        public IPrefixEmitter PrefixEmitter => throw new NotImplementedException();
-        public ISuffixEmitter SuffixEmitter => throw new NotImplementedException();
-
-        protected readonly IParser           parser;
-        protected readonly IWordEmitter      wordEmitter;
-        protected readonly IWordConcatenator wordConcatenator;
-        protected readonly IPrefixEmitter    prefixEmitter;
-        protected readonly ISuffixEmitter    suffixEmitter;
+        public IParser Parser { get; }
+        public IWordEmitter WordEmitter { get; }
+        public IWordConcatenator WordConcatenator { get; }
+        public IPrefixEmitter PrefixEmitter { get; }
+        public ISuffixEmitter SuffixEmitter { get; }
 
         public CaseConverter(
             IParser parser,
             IWordEmitter wordEmitter,
-            IWordConcatenator wordConcatenator
+            IWordConcatenator wordConcatenator,
+            IPrefixEmitter prefixEmitter = null,
+            ISuffixEmitter suffixEmitter = null
         )
         {
-            this.wordEmitter = wordEmitter ?? throw new ArgumentNullException(nameof(wordEmitter));
-            this.parser = parser ?? throw new ArgumentNullException(nameof(parser));
-            this.wordConcatenator = wordConcatenator ??
-                                    throw new ArgumentNullException(nameof(wordConcatenator));
+            WordEmitter = wordEmitter ?? throw new ArgumentNullException(nameof(wordEmitter));
+            Parser = parser ?? throw new ArgumentNullException(nameof(parser));
+            WordConcatenator = wordConcatenator ??
+                               throw new ArgumentNullException(nameof(wordConcatenator));
+
+            PrefixEmitter = prefixEmitter;
+            SuffixEmitter = suffixEmitter;
         }
 
-        public ConvertedString ConvertCase(string value)
+        public CasedString ConvertCase(string value)
         {
             if (value == null)
             {
                 throw new ArgumentNullException();
             }
 
-            var tokens = Parser.Parse(value);
-
-            if (!(tokens is IList<WordToken> wTokens)) // FIXME: need to deal with this type hell
-            {
-                throw new NotImplementedException();
-            }
-            else
-            {
-                return ConvertCase(value, wTokens);
-            }
-
-            //return ConvertCase(tokens);
+            return ConvertCase(Parser.Parse(value), value);
         }
 
-        public ConvertedString ConvertCase(string originalValue, IList<WordToken> tokens)
+        public CasedString ConvertCase(IReadOnlyList<WordToken> tokens, string originalValue)
         {
             if (tokens.Count < 2)
             {
                 // skip sb allocation
 
-                string word = wordEmitter.Emit(tokens, 0);
-                string prefix = prefixEmitter != null
-                                    ? prefixEmitter.GetPrefix(tokens, word)
-                                    : string.Empty;
+                string casedValue = WordEmitter.Emit(tokens, 0);
 
-                string suffix = suffixEmitter != null
-                                    ? suffixEmitter.GetSuffix(tokens, word)
-                                    : string.Empty;
-
-                return new ConvertedString(
+                return new CasedString(
                     originalValue,
-                    prefix + word + suffix,
-                    (IReadOnlyCollection<IToken>)tokens, // FIXME
+                    (PrefixEmitter != null
+                         ? PrefixEmitter.GetPrefix(tokens, casedValue)
+                         : string.Empty) +
+                    casedValue +
+                    (SuffixEmitter != null
+                         ? SuffixEmitter.GetSuffix(tokens, casedValue)
+                         : string.Empty),
+                    tokens,
                     this
                 );
             }
-            else
+
+            StringBuilder stringBuilder = new StringBuilder();
+
+            for (var i = 0; i < tokens.Count; i++)
             {
-                StringBuilder builder = new StringBuilder();
-
-                for (var i = 0; i < tokens.Count; i++)
-                {
-                    builder.Append(wordEmitter.Emit(tokens, i));
-                }
-
-                string word = builder.ToString();
-                string prefix = prefixEmitter != null
-                                    ? prefixEmitter.GetPrefix(tokens, word)
-                                    : string.Empty;
-
-                string suffix = suffixEmitter != null
-                                    ? suffixEmitter.GetSuffix(tokens, word)
-                                    : string.Empty;
-
-                return new ConvertedString(
-                    originalValue,
-                    prefix + word + suffix,
-                    (IReadOnlyCollection<IToken>) tokens,
-                    this
-                );
+                stringBuilder.Append(WordEmitter.Emit(tokens, i));
             }
-        }
 
-        ConvertedString ICaseConverter.ConvertCase(IList<IToken> tokens) =>
-            throw new NotImplementedException();
-        //ConvertCase(tokens.Cast<WordToken>().ToArray());
+            if (PrefixEmitter != null)
+            {
+                stringBuilder.Insert(0, PrefixEmitter.GetPrefix(tokens, stringBuilder));
+            }
+
+            if (SuffixEmitter != null)
+            {
+                stringBuilder.Insert(0, SuffixEmitter.GetSuffix(tokens, stringBuilder));
+            }
+
+            return new CasedString(
+                originalValue,
+                stringBuilder.ToString(),
+                tokens,
+                this
+            );
+        }
     }
 }
