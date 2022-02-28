@@ -15,6 +15,8 @@ namespace Case.NET.Test.Parsing.WordSplitting
         [DataRow("HELLOworld", 0, 5)]
         [DataRow("HElloworld", 0, 2)]
         [DataRow("WORLDhello", 5, -1)]
+        [DataRow("Hello_world", 0, -1)]
+        [DataRow("HELLO_world", 0, -1)]
         public void TestTryFindSplitIndex(string value, int startAt, int expectedIndex)
         {
             const bool ExpectedSkipIndexChar =
