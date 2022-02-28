@@ -66,3 +66,7 @@ For the same reason `Parser.Universal` is a *property*, returning new instance e
 - `SPonGE CasE`
 - `reVERse spONge cASe`
 - `RanDOM CAse`
+
+## Misc
+
+- Fluent API converter builders
