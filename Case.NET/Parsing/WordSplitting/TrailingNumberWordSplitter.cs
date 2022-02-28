@@ -1,7 +1,17 @@
+using System;
+
 namespace Case.NET.Parsing.WordSplitting
 {
     public class TrailingNumberWordSplitter : IWordSplitter
     {
+#pragma warning disable CS0618
+        public static readonly TrailingNumberWordSplitter Instance =
+            new TrailingNumberWordSplitter();
+#pragma warning restore CS0618
+
+        [Obsolete("Use static instance instead")]
+        public TrailingNumberWordSplitter() { }
+
         public int TryFindSplitIndex(string value, int startAt, out bool skipIndexChar)
         {
             skipIndexChar = false;
