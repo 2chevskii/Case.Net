@@ -1,6 +1,6 @@
 # Case.NET
 
-String manipulation library for string casing manipulation
+String manipulation library for string casing manipulation <!-- What the fuck is this? -->
 
 ## Motivation
 
@@ -16,9 +16,8 @@ it would be quite useful to write something which will be reliable and extensibl
   - `camelCase`
   - `PascalCase`
   - `snake_case`
-  - `ALL_UPPER_CASE`
   - `kebab-case`
-  - `Train-Case`
+  - See [supported conventions](#currently-supported-conventions-as-target) for full list
 - Easily extensible:
   - Modular design - combine different types of parsers, word emitters, concatenators, etc. to build the converter you need
   - Modules are dead simple to implement
@@ -30,6 +29,28 @@ it would be quite useful to write something which will be reliable and extensibl
 
 > TODO
 
+## Currently supported conventions (as target)
+
+- `camelCase`
+- `PascalCase`
+- `snake_case`
+- `CONSTANT_CASE`
+- `kebab-case`
+- `Train-Case`
+
 ## TODO
 
-> TODO
+### Target conventions to support
+
+- `Capital Case`
+- `dot.case`
+- `Namespace.Case`
+- `no case`
+- `path/case` (With optional backslash `\` as delimiter)
+- `Sentence case`
+- `Title Case`
+- Swap case (Change case of every character) `Swap Case` -> `sWAP cASE`
+- `FeNcE CaSe`
+- `SPonGE CasE`
+- `reVERse spONge cASe`
+- `RanDOM CAse`
