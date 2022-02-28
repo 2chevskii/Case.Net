@@ -1,41 +1,67 @@
-using System;
+using static Case.NET.CaseConverter;
 
 namespace Case.NET.Extensions
 {
     public static class ConvertedStringExtensions
     {
-        public static CasedString ToCamelCase(this CasedString self)
+        public static CasedString ToCamelCase(this CasedString self, bool forceParse =  false)
         {
-            //return CaseConverter.CamelCase.ConvertCase(self.Tokens); // reuse tokens
+            if (forceParse)
+            {
+                return CamelCase.ConvertCase(self.OriginalValue);
+            }
 
-            throw new NotImplementedException();
+            return CamelCase.ConvertCase(self.Tokens, self.OriginalValue);
         }
 
-        public static CasedString ToPascalCase(this CasedString self)
+        public static CasedString ToPascalCase(this CasedString self, bool forceParse = false)
         {
-            //return CaseConverter.PascalCase.ConvertCase(self.Tokens);
+            if (forceParse)
+            {
+                return PascalCase.ConvertCase(self.OriginalValue);
+            }
 
-            throw new NotImplementedException();
+            return PascalCase.ConvertCase(self.Tokens, self.OriginalValue);
         }
 
-        public static CasedString ToSnakeCase(this CasedString self)
+        public static CasedString ToSnakeCase(this CasedString self, bool forceParse = false)
         {
-            throw new NotImplementedException();
+            if (forceParse)
+            {
+                return SnakeCase.ConvertCase(self.OriginalValue);
+            }
+
+            return SnakeCase.ConvertCase(self.Tokens, self.OriginalValue);
         }
 
-        public static CasedString ToAllUpperCase(this CasedString self)
+        public static CasedString ToConstantCase(this CasedString self, bool forceParse = false)
         {
-            throw new NotImplementedException();
+            if (forceParse)
+            {
+                return ConstantCase.ConvertCase(self.OriginalValue);
+            }
+
+            return ConstantCase.ConvertCase(self.Tokens, self.OriginalValue);
         }
 
-        public static CasedString ToKebabCase(this CasedString self)
+        public static CasedString ToKebabCase(this CasedString self, bool forceParse = false)
         {
-            throw new NotImplementedException();
+            if (forceParse)
+            {
+                return KebabCase.ConvertCase(self.OriginalValue);
+            }
+
+            return KebabCase.ConvertCase(self.Tokens, self.OriginalValue);
         }
 
-        public static CasedString ToTrainCase(this CasedString self)
+        public static CasedString ToTrainCase(this CasedString self, bool forceParse = false)
         {
-            throw new NotImplementedException();
+            if (forceParse)
+            {
+                return TrainCase.ConvertCase(self.OriginalValue);
+            }
+
+            return TrainCase.ConvertCase(self.Tokens, self.OriginalValue);
         }
     }
 }
