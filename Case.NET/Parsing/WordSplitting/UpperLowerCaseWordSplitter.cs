@@ -22,7 +22,7 @@ namespace Case.NET.Parsing.WordSplitting
             {
                 char c = value[i];
                 char cPrev = value[i - 1];
-                char cPrevPrev = value[i - 1];
+                char cPrevPrev = value[i - 2];
 
                 if (!char.IsLetter(cPrevPrev) ||
                     !char.IsLetter(cPrev) ||
