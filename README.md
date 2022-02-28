@@ -24,6 +24,18 @@ it would be quite useful to write something which will be reliable and extensibl
 - Performant:
   - Default modules' implementation aims to be as much GC-friendly as possible
   - No `Regex` usage, tokenization done by simple condition-based lexers choosing leftmost overlapped sequence (smallest possible token size is chosen)
+- Zero dependencies:
+  - Keeping your application size as low as possible by avoiding third party library bloat
+- Portable:
+  - Targets NetStandard2.0, allowing references from .NET Core 2.0 or greater and .NET Framework 4.6.1 or greater
+  - Targets NetStandard2.1, allowing references from .NET Core 3.0 or greater
+
+### Warning
+
+Default `Case.NET.Parsing.Parser` implementation *is not* thread-safe in `netstandard2.0` build while *it is* in `netstandard2.1`.
+Thus it's recommended to have a `Parser` instance for each thread, if your project is targeting .NET Framework, or .NET Core 2.0-2.2
+
+For the same reason `Parser.Universal` is a *property*, returning new instance every call in `netstandard2.0`, while it is a *static field* in `netstandard2.1`
 
 ## Usage
 
