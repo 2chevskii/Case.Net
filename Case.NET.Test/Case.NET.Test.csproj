@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <Folder Include="Parsing\Filters\" />
+    <Folder Include="Parsing\WordSplitting\" />
   </ItemGroup>
 
 </Project>
