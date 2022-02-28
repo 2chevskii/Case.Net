@@ -9,7 +9,8 @@ namespace Case.NET.Emit.Concat
         public static readonly SingleCharWordConcatenator Dash =
             new SingleCharWordConcatenator('-');
         public static readonly SingleCharWordConcatenator Underscore =
-            new SingleCharWordConcatenator('.');
+            new SingleCharWordConcatenator('_');
+        public static readonly SingleCharWordConcatenator Dot = new SingleCharWordConcatenator('.');
 
         public readonly char ConcatChar;
         public readonly bool InsertIfPresent;
@@ -34,7 +35,7 @@ namespace Case.NET.Emit.Concat
 
             WordToken currentToken = tokens[index];
 
-            char curTokenLastChar = currentToken.Value[currentToken.Length-1];
+            char curTokenLastChar = currentToken.Value[currentToken.Length - 1];
 
             if (curTokenLastChar == ConcatChar)
             {
