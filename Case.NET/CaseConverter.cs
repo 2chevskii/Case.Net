@@ -118,10 +118,19 @@ namespace Case.NET
 
             StringBuilder stringBuilder = new StringBuilder();
 
-            for (var i = 0; i < tokens.Count; i++)
+            // This looks weird, but be can save CPU cycles
+            // getting rid of if(i != tokens.Count - 1)
+            // while checking if we should append word concatenator
+            int i = 0;
+            int l = tokens.Count - 1;
+            for (; i < l; i++)
             {
                 stringBuilder.Append(WordEmitter.Emit(tokens, i));
+
+                stringBuilder.Append(WordConcatenator.GetConcatenation(tokens, i));
             }
+
+            stringBuilder.Append(WordEmitter.Emit(tokens, l));
 
             if (PrefixEmitter != null)
             {
@@ -130,7 +139,7 @@ namespace Case.NET
 
             if (SuffixEmitter != null)
             {
-                stringBuilder.Insert(0, SuffixEmitter.GetSuffix(tokens, stringBuilder));
+                stringBuilder.Append(SuffixEmitter.GetSuffix(tokens, stringBuilder));
             }
 
             return new CasedString(

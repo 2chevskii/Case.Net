@@ -25,7 +25,7 @@ namespace Case.NET.Emit.Concat
             concatCharAsString = concatChar.ToString();
         }
 
-        public string GetConcatenation(IList<WordToken> tokens, int index)
+        public string GetConcatenation(IReadOnlyList<WordToken> tokens, int index)
         {
             if (InsertIfPresent)
             {

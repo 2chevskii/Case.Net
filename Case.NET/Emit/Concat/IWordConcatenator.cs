@@ -12,6 +12,6 @@ namespace Case.NET.Emit.Concat
         /// <param name="tokens"></param>
         /// <param name="index">Index of the token, AFTER which concatenation will be performed (cannot include last token)</param>
         /// <returns></returns>
-        string GetConcatenation(IList<WordToken> tokens, int index);
+        string GetConcatenation(IReadOnlyList<WordToken> tokens, int index);
     }
 }
