@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 using Case.NET.Parsing.Tokens;
@@ -6,6 +7,13 @@ namespace Case.NET.Emit.Words
 {
     public class CamelCaseWordEmitter : IWordEmitter
     {
+#pragma warning disable CS0618
+        public static readonly CamelCaseWordEmitter Instance = new CamelCaseWordEmitter();
+#pragma warning restore CS0618
+
+        [Obsolete("Use static instance instead")]
+        public CamelCaseWordEmitter() { }
+
         public string Emit(IReadOnlyList<WordToken> tokens, int index)
         {
             WordToken token = tokens[index];

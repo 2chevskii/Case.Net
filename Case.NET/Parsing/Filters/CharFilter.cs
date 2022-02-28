@@ -5,6 +5,9 @@ namespace Case.NET.Parsing.Filters
 {
     public class CharFilter : ICharFilter
     {
+        /// <summary>
+        /// Default char filter handling most commonly used delimiters
+        /// </summary>
         public static readonly CharFilter CommonDelimiters = new CharFilter(
             new[] {
                 '_',

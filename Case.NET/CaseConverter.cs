@@ -12,15 +12,53 @@ namespace Case.NET
 {
     public class CaseConverter : ICaseConverter
     {
+        /// <summary>
+        /// Default <see cref="CaseConverter"/> implementation to convert values to <c>camelCase</c>
+        /// </summary>
         public static readonly CaseConverter CamelCase = new CaseConverter(
             Parsing.Parser.Universal,
-            new CamelCaseWordEmitter(),
-            new EmptyWordConcatenator()
+            CamelCaseWordEmitter.Instance,
+            EmptyWordConcatenator.Instance
         );
+        /// <summary>
+        /// Default <see cref="CaseConverter"/> implementation to convert values to <c>PascalCase</c>
+        /// </summary>
         public static readonly CaseConverter PascalCase = new CaseConverter(
             Parsing.Parser.Universal,
             StateLessWordEmitter.FirstUpper,
-            new EmptyWordConcatenator()
+            EmptyWordConcatenator.Instance
+        );
+        /// <summary>
+        /// Default <see cref="CaseConverter"/> implementation to convert values to <c>snake_case</c>
+        /// </summary>
+        public static readonly CaseConverter SnakeCase = new CaseConverter(
+            Parsing.Parser.Universal,
+            StateLessWordEmitter.AllLower,
+            SingleCharWordConcatenator.Underscore
+        );
+        /// <summary>
+        /// Default <see cref="CaseConverter"/> implementation to convert values to <c>CONSTANT_CASE</c>
+        /// </summary>
+        public static readonly CaseConverter ConstantCase = new CaseConverter(
+            Parsing.Parser.Universal,
+            StateLessWordEmitter.AllUpper,
+            SingleCharWordConcatenator.Underscore
+        );
+        /// <summary>
+        /// Default <see cref="CaseConverter"/> implementation to convert values to <c>kebab-case</c>
+        /// </summary>
+        public static readonly CaseConverter KebabCase = new CaseConverter(
+            Parsing.Parser.Universal,
+            StateLessWordEmitter.AllLower,
+            SingleCharWordConcatenator.Dash
+        );
+        /// <summary>
+        /// Default <see cref="CaseConverter"/> implementation to convert values to <c>Train-Case</c>
+        /// </summary>
+        public static readonly CaseConverter TrainCase = new CaseConverter(
+            Parsing.Parser.Universal,
+            StateLessWordEmitter.FirstUpper,
+            SingleCharWordConcatenator.Dash
         );
 
         public IParser Parser { get; }
