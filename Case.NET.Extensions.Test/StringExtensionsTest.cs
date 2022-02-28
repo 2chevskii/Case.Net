@@ -34,19 +34,69 @@ namespace Case.NET.Extensions.Test
         public void ToCamelCaseTest(string value, string expected) =>
             new StringAssertions(value.ToCamelCase()).Subject.Should().Be(expected);
 
-        //[DataTestMethod]
-        //public void ToPascalCaseTest(string value, string expected) { }
+        [DataTestMethod]
+        [DataRow("HelloWorld", HELLO_WORLD_PASCAL_CASED)]
+        [DataRow("helloWorld", HELLO_WORLD_PASCAL_CASED)]
+        [DataRow("hello-world", HELLO_WORLD_PASCAL_CASED)]
+        [DataRow("Hello-world", HELLO_WORLD_PASCAL_CASED)]
+        [DataRow("Hello-World", HELLO_WORLD_PASCAL_CASED)]
+        [DataRow("Hello World", HELLO_WORLD_PASCAL_CASED)]
+        [DataRow("hello World", HELLO_WORLD_PASCAL_CASED)]
+        [DataRow("hello_World", HELLO_WORLD_PASCAL_CASED)]
+        [DataRow("HELLO_WORLD", HELLO_WORLD_PASCAL_CASED)]
+        public void ToPascalCaseTest(string value, string expected) =>
+            new StringAssertions(value.ToPascalCase()).Subject.Should().Be(expected);
 
-        //[DataTestMethod]
-        //public void ToSnakeCaseTest(string value, string expected) { }
+        [DataTestMethod]
+        [DataRow("HelloWorld", HELLO_WORLD_SNAKE_CASED)]
+        [DataRow("helloWorld", HELLO_WORLD_SNAKE_CASED)]
+        [DataRow("hello-world", HELLO_WORLD_SNAKE_CASED)]
+        [DataRow("Hello-world", HELLO_WORLD_SNAKE_CASED)]
+        [DataRow("Hello-World", HELLO_WORLD_SNAKE_CASED)]
+        [DataRow("Hello World", HELLO_WORLD_SNAKE_CASED)]
+        [DataRow("hello World", HELLO_WORLD_SNAKE_CASED)]
+        [DataRow("hello_World", HELLO_WORLD_SNAKE_CASED)]
+        [DataRow("HELLO_WORLD", HELLO_WORLD_SNAKE_CASED)]
+        public void ToSnakeCaseTest(string value, string expected) =>
+            new StringAssertions(value.ToSnakeCase()).Subject.Should().Be(expected);
 
-        //[DataTestMethod]
-        //public void ToConstantCaseTest(string value, string expected) { }
+        [DataTestMethod]
+        [DataRow("HelloWorld", HELLO_WORLD_CONSTANT_CASED)]
+        [DataRow("helloWorld", HELLO_WORLD_CONSTANT_CASED)]
+        [DataRow("hello-world", HELLO_WORLD_CONSTANT_CASED)]
+        [DataRow("Hello-world", HELLO_WORLD_CONSTANT_CASED)]
+        [DataRow("Hello-World", HELLO_WORLD_CONSTANT_CASED)]
+        [DataRow("Hello World", HELLO_WORLD_CONSTANT_CASED)]
+        [DataRow("hello World", HELLO_WORLD_CONSTANT_CASED)]
+        [DataRow("hello_World", HELLO_WORLD_CONSTANT_CASED)]
+        [DataRow("HELLO_WORLD", HELLO_WORLD_CONSTANT_CASED)]
+        public void ToConstantCaseTest(string value, string expected) =>
+            new StringAssertions(value.ToConstantCase()).Subject.Should().Be(expected);
 
-        //[DataTestMethod]
-        //public void ToKebabCaseTest(string value, string expected) { }
+        [DataTestMethod]
+        [DataRow("HelloWorld", HELLO_WORLD_KEBAB_CASED)]
+        [DataRow("helloWorld", HELLO_WORLD_KEBAB_CASED)]
+        [DataRow("hello-world", HELLO_WORLD_KEBAB_CASED)]
+        [DataRow("Hello-world", HELLO_WORLD_KEBAB_CASED)]
+        [DataRow("Hello-World", HELLO_WORLD_KEBAB_CASED)]
+        [DataRow("Hello World", HELLO_WORLD_KEBAB_CASED)]
+        [DataRow("hello World", HELLO_WORLD_KEBAB_CASED)]
+        [DataRow("hello_World", HELLO_WORLD_KEBAB_CASED)]
+        [DataRow("HELLO_WORLD", HELLO_WORLD_KEBAB_CASED)]
+        public void ToKebabCaseTest(string value, string expected) =>
+            new StringAssertions(value.ToKebabCase()).Subject.Should().Be(expected);
 
-        //[DataTestMethod]
-        //public void ToTrainCaseTest(string value, string expected) { }
+        [DataTestMethod]
+        [DataRow("HelloWorld", HELLO_WORLD_TRAIN_CASED)]
+        [DataRow("helloWorld", HELLO_WORLD_TRAIN_CASED)]
+        [DataRow("hello-world", HELLO_WORLD_TRAIN_CASED)]
+        [DataRow("Hello-world", HELLO_WORLD_TRAIN_CASED)]
+        [DataRow("Hello-World", HELLO_WORLD_TRAIN_CASED)]
+        [DataRow("Hello World", HELLO_WORLD_TRAIN_CASED)]
+        [DataRow("hello World", HELLO_WORLD_TRAIN_CASED)]
+        [DataRow("hello_World", HELLO_WORLD_TRAIN_CASED)]
+        [DataRow("HELLO_WORLD", HELLO_WORLD_TRAIN_CASED)]
+        public void ToTrainCaseTest(string value, string expected) =>
+            new StringAssertions(value.ToTrainCase()).Subject.Should().Be(expected);
     }
 }
