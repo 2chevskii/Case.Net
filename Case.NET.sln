@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
+		Directory.Build.props = Directory.Build.props
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
@@ -17,7 +18,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Case.NET.Test", "Case.NET.T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Case.NET.Extensions", "Case.NET.Extensions\Case.NET.Extensions.csproj", "{3C3C1CF6-8BCF-4048-A793-1D01E67D67F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Case.NET.Extensions.Test", "Case.NET.Extensions.Test\Case.NET.Extensions.Test.csproj", "{022EFC9F-76B6-48AF-AE1F-1B6AE3B4922F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Case.NET.Extensions.Test", "Case.NET.Extensions.Test\Case.NET.Extensions.Test.csproj", "{022EFC9F-76B6-48AF-AE1F-1B6AE3B4922F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

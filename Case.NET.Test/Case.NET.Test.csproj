@@ -26,9 +26,4 @@
     <ProjectReference Include="..\Case.NET\Case.NET.csproj" TargetFramework="netstandard2.1" />
   </ItemGroup>
 
-
-  <ItemGroup>
-    <Folder Include="Parsing\Filters\" />
-  </ItemGroup>
-
 </Project>

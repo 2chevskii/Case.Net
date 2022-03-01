@@ -2,14 +2,21 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+    <PackageId>Case.NET.Extensions</PackageId>
+    <Description></Description>
+    <PackageReleaseNotes>See README.md for full info</PackageReleaseNotes>
+
+    <OutputType>Library</OutputType>
+    <AssemblyName>Case.NET.Extensions</AssemblyName>
+    <RootNamespace>Case.NET.Extensions</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Case.NET\Case.NET.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="FluentAPI\" />
   </ItemGroup>
 
 </Project>
