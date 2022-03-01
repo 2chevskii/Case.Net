@@ -13,6 +13,12 @@
     <OutputType>Library</OutputType>
     <AssemblyName>Case.NET.Extensions</AssemblyName>
     <RootNamespace>Case.NET.Extensions</RootNamespace>
+    <DebugType>portable</DebugType>
+    <LangVersion>7.3</LangVersion>
+
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningLevel>5</WarningLevel>
+    <NoWarn />
   </PropertyGroup>
 
   <ItemGroup>

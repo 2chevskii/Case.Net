@@ -1,0 +1,10 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <VersionSuffix></VersionSuffix>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(CUSTOM_VERSION)' == 'true'">
+    <Version>$(CUSTOM_VERSION)</Version>
+  </PropertyGroup>
+</Project>

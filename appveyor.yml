@@ -1,0 +1,30 @@
+image: Visual Studio 2022
+clone_depth: 1
+install:
+  - pwsh: dotnet new tool-manifest
+  - pwsh: dotnet tool install Cake.Tool --version 2.1.0
+skip_commits:
+  files:
+    - ./.gitignore
+    - ./.editorconfig
+    - ./LICENSE
+    - ./README.md
+build_script:
+  - pwsh: dotnet cake ./Case.NET/build.cake --configuration Release
+  # - pwsh: dotnet cake ./Case.NET.Extensions/build.cake --configuration Release
+test: false # build script will run all the tests automatically
+artifacts:
+  - path: '**/*.nupkg'
+for:
+  - only_commits:
+      files:
+        - Case.NET/
+        - Case.NET.Test/
+    build_script:
+      - pwsh: dotnet cake ./Case.NET/build.cake --configuration Release
+  # - only_commits:
+  #     files:
+  #       - Case.NET.Extensions/
+  #       - Case.NET.Extensions.Test/
+  #   build_script:
+  #     - pwsh: dotnet cake ./Case.NET/build.cake --configuration Release
