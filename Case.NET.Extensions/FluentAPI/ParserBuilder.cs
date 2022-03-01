@@ -87,6 +87,8 @@ namespace Case.NET.Extensions.FluentAPI
         public ParserBuilder WithCharFilter(ICharFilter charFilter)
         {
             charFilters.Add(charFilter ?? throw new ArgumentNullException());
+
+            return this;
         }
 
         public ParserBuilder WithCharFilters(IEnumerable<ICharFilter> charFilters)
