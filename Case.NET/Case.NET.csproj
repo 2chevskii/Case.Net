@@ -13,6 +13,13 @@
     <OutputType>Library</OutputType>
     <AssemblyName>Case.NET</AssemblyName>
     <RootNamespace>Case.NET</RootNamespace>
+    <DebugType>portable</DebugType>
+    <LangVersion>7.3</LangVersion>
+
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningLevel>5</WarningLevel>
+    <NoWarn />
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
 </Project>
