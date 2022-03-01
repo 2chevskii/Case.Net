@@ -11,73 +11,106 @@ namespace Case.NET.Extensions.FluentAPI
 {
     public class CaseConverterBuilder : IBuilder<ICaseConverter>
     {
-        protected bool           changed;
-        protected ICaseConverter builtSubject;
-
         protected IParser           parser;
-        protected IWordEmitter      emitter;
-        protected IWordConcatenator concatenator;
+        protected IWordEmitter      wordEmitter;
+        protected IWordConcatenator wordConcatenator;
         protected IPrefixEmitter    prefixEmitter;
         protected ISuffixEmitter    suffixEmitter;
 
+        public IParser Parser => parser;
+        public IWordEmitter WordEmitter => wordEmitter;
+        public IWordConcatenator WordConcatenator => wordConcatenator;
+        public IPrefixEmitter PrefixEmitter => prefixEmitter;
+        public ISuffixEmitter SuffixEmitter => suffixEmitter;
+
+        /// <summary>
+        /// Creates <see cref="ICaseConverter"/> with selected options<br/>
+        /// <remarks>If no <see cref="Parser"/> is present, <see cref="Parsing.Parser.Universal"/> will be used<br/></remarks>
+        /// <remarks>If no <see cref="WordEmitter"/> is present, <see cref="CamelCaseWordEmitter"/> will be used<br/></remarks>
+        /// <remarks>If no <see cref="WordConcatenator"/> is present, <see cref="EmptyWordConcatenator"/> will be used</remarks>
+        /// </summary>
+        /// <returns>Built converter</returns>
         public ICaseConverter Build()
         {
-            throw new NotImplementedException();
+            IParser useParser = parser ?? Parsing.Parser.Universal;
+            IWordEmitter useWordEmitter = wordEmitter ?? CamelCaseWordEmitter.Instance;
+            IWordConcatenator useWordConcatenator =
+                wordConcatenator ?? EmptyWordConcatenator.Instance;
 
-            if (!changed)
-            {
-                return builtSubject;
-            }
+            CaseConverter converter = new CaseConverter(
+                useParser,
+                useWordEmitter,
+                useWordConcatenator,
+                prefixEmitter,
+                suffixEmitter
+            );
+
+            return converter;
         }
 
         public CaseConverterBuilder WithParser(IParser parser)
         {
-            throw new NotImplementedException();
+            this.parser = parser ?? throw new ArgumentNullException();
+
+            return this;
         }
 
         public CaseConverterBuilder WithParser(Action<ParserBuilder> buildAction)
         {
-            throw new NotImplementedException();
+            if (buildAction == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            var builder = new ParserBuilder();
+
+            buildAction(builder);
+
+            parser = builder.Build();
+
+            return this;
         }
 
         public CaseConverterBuilder WithWordEmitter(IWordEmitter wordEmitter)
         {
-            throw new NotImplementedException();
-        }
+            this.wordEmitter = wordEmitter ?? throw new ArgumentNullException();
 
-        public CaseConverterBuilder WithWordEmitter(Action<WordEmitterBuilder> buildAction)
-        {
-            throw new NotImplementedException();
+            return this;
         }
 
         public CaseConverterBuilder WithWordConcatenator(IWordConcatenator wordConcatenator)
         {
-            throw new NotImplementedException();
-        }
+            this.wordConcatenator = wordConcatenator ?? throw new ArgumentNullException();
 
-        public CaseConverterBuilder WithWordConcatenator(Action<IWordConcatenator> buildAction)
-        {
-            throw new NotImplementedException();
+            return this;
         }
-
+        
         public CaseConverterBuilder WithPrefixEmitter(IPrefixEmitter prefixEmitter)
         {
-            throw new NotImplementedException();
+            this.prefixEmitter = prefixEmitter ?? throw new ArgumentNullException();
+
+            return this;
         }
 
-        public CaseConverterBuilder WithPrefixEmitter(Action<PrefixEmitterBuilder> buildAction)
+        public CaseConverterBuilder WithoutPrefixEmitter()
         {
-            throw new NotImplementedException();
+            prefixEmitter = null;
+
+            return this;
         }
 
         public CaseConverterBuilder WithSuffixEmitter(ISuffixEmitter suffixEmitter)
         {
-            throw new NotImplementedException();
+            this.suffixEmitter = suffixEmitter;
+
+            return this;
         }
 
-        public CaseConverterBuilder WithSuffixEmitter(Action<SuffixEmitterBuilder> buildAction)
+        public CaseConverterBuilder WithoutSuffixEmitter()
         {
-            throw new NotImplementedException();
+            suffixEmitter = null;
+
+            return this;
         }
 
         public CasedString ConvertCase(string value) => Build().ConvertCase(value);

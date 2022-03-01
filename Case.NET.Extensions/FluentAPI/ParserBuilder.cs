@@ -9,13 +9,13 @@ namespace Case.NET.Extensions.FluentAPI
 {
     public class ParserBuilder : IBuilder<IParser>
     {
+        protected readonly ICollection<IWordSplitter> wordSplitters;
+        protected readonly ICollection<ICharFilter>   charFilters;
+
         public IReadOnlyCollection<IWordSplitter> WordSplitters =>
             (IReadOnlyCollection<IWordSplitter>) wordSplitters;
         public IReadOnlyCollection<ICharFilter> CharFilters =>
             (IReadOnlyCollection<ICharFilter>) charFilters;
-
-        protected readonly ICollection<IWordSplitter> wordSplitters;
-        protected readonly ICollection<ICharFilter>   charFilters;
 
         public ParserBuilder()
         {
@@ -30,12 +30,12 @@ namespace Case.NET.Extensions.FluentAPI
         /// <returns>Built parser</returns>
         public IParser Build()
         {
-            if (wordSplitters.Count < 1)
-            {
-                wordSplitters.Add(SingleCharWordSplitter.Whitespace);
-            }
-
-            return new Parser(wordSplitters, charFilters);
+            return new Parser(
+                wordSplitters.Count != 0
+                    ? wordSplitters
+                    : new[] {SingleCharWordSplitter.Whitespace},
+                charFilters
+            );
         }
 
         public ParserBuilder WithWordSplitter(IWordSplitter wordSplitter)
@@ -86,7 +86,7 @@ namespace Case.NET.Extensions.FluentAPI
 
         public ParserBuilder WithCharFilter(ICharFilter charFilter)
         {
-            charFilters.Add(charFilter?? throw new ArgumentNullException());
+            charFilters.Add(charFilter ?? throw new ArgumentNullException());
         }
 
         public ParserBuilder WithCharFilters(IEnumerable<ICharFilter> charFilters)
