@@ -1,6 +1,6 @@
 # Case.NET
 
-String manipulation library for string casing manipulation <!-- What the fuck is this? -->
+String manipulation library built with intention to make naming conventions conversion easy
 
 ## Motivation
 
@@ -9,6 +9,8 @@ to `camelCase`, I went out searching around NuGet and found out that there are n
 which would be public, and not part of some parent project.
 I see that as a huge overlook, considering amount of such packages for other languages (JS, for example), so I decided
 it would be quite useful to write something which will be reliable and extensible, so here it is.
+
+> Note that library is still in development and is lacking some planned functionality (see [TODO](#todo)) or *may* contain bugs, feel free to report them in the issues section <!-- [issues](issues url here) -->
 
 ## Features
 
@@ -54,19 +56,19 @@ For the same reason `Parser.Universal` is a *property*, returning new instance e
 
 ### Target conventions to support
 
-- `Capital Case`
-- `dot.case`
-- `Namespace.Case`
-- `no case`
-- `path/case` (With optional backslash `\` as delimiter)
-- `Sentence case`
-- `Title Case`
-- Swap case (Change case of every character) `Swap Case` -> `sWAP cASE`
-- `FeNcE CaSe`
-- `SPonGE CasE`
-- `reVERse spONge cASe`
-- `RanDOM CAse`
+- [ ] `Capital Case`
+- [ ] `dot.case`
+- [ ] `Namespace.Case`
+- [ ] `no case`
+- [ ] `path/case` (With optional backslash `\` as delimiter)
+- [ ] `Sentence case`
+- [ ] `Title Case`
+- [ ] Swap case (Change case of every character) `Swap Case` -> `sWAP cASE`
+- [ ] `FeNcE CaSe`
+- [ ] `SPonGE CasE`
+- [ ] `reVERse spONge cASe`
+- [ ] `RanDOM CAse`
 
-## Misc
+### Misc
 
-- Fluent API converter builders
+- Improve unit test coverage
