@@ -2,7 +2,6 @@
   <PropertyGroup>
     <Authors>2CHEVSKII</Authors>
     <Copyright>Copyright (c) 2022 2CHEVSKII</Copyright>
-    <PackageLicenseFile>$(MSBuildThisFileDirectory)LICENSE</PackageLicenseFile>
     <PackageTags>naming;case;casing;convert;convention;camel;pascal;snake;kebab</PackageTags>
     <!-- Last three kwds sound pretty funny without context -->
 
@@ -11,16 +10,8 @@
     <PackageProjectUrl>$(GitHubRepoUrl)</PackageProjectUrl>
     <RepositoryUrl>$(GitHubRepoUrl).git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <PackageLicense>LICENSE</PackageLicense>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)README.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-    <None Include="$(PackageLicenseFile)">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-  </ItemGroup>
 </Project>
