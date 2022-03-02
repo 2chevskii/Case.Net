@@ -12,7 +12,7 @@ readonly string MainProj = Path.Combine(Cwd, "Case.NET.csproj");
 readonly string TestProj = Path.GetFullPath("../Case.NET.Test/Case.NET.Test.csproj");
 readonly string VersionProj = Path.Combine(Cwd, "Version.props");
 readonly Regex TagNameSanitizeRegex = new(
-  @"Case\.NET\sv(\d\.\d)(?:-([a-z-\.0-9]+))?",
+  @"Case\.NETv(\d\.\d)(?:-([a-z-\.0-9]+))?",
   RegexOptions.Compiled | RegexOptions.IgnoreCase
 );
 readonly string ConfigurationBin = Path.Combine(Bin, CONFIGURATION);
