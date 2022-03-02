@@ -1,11 +1,6 @@
 using System.Text.RegularExpressions;
 using Path = System.IO.Path;
 
-
-if(EnvironmentVariable("CI")?.ToLower() != "true") {
-  throw new CakeException("Build failed: non-CI environments are not supported, use standard dotnet tools instead");
-}
-
 const string CONFIGURATION = "Release";
 const string RUN_TASK = "default";
 readonly bool IsTag = EnvironmentVariable("APPVEYOR_REPO_TAG")?.ToLower() == "true";
@@ -58,7 +53,7 @@ readonly string NugetApiKey = EnvironmentVariable("NUGET_API_KEY");
 
   var peekVer = XmlPeek(VersionProj, "/Project/PropertyGroup/Version");
 
-  var mm = peekVer.Split('.')[0..1];
+  var mm = peekVer.Split('.')[0..2];
   var p = BuildNumber.ToString();
 
   var core = $"{string.Join(".", mm)}.{p}";
@@ -214,6 +209,10 @@ Task("regular-build").IsDependentOn("build")
                      .Does(() => {
                        Information("Regular build completed");
                      });
+
+if(EnvironmentVariable("CI")?.ToLower() != "true") {
+  throw new CakeException("Build failed: non-CI environments are not supported, use standard dotnet tools instead");
+}
 
 if(IsTag) {
   Information("Tag build detected, running release build...");
