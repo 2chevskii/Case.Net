@@ -196,35 +196,29 @@ Task("push-package").Does(() => {
                       });
                     });
 
-Task("release").IsDependentOn("set-version")
-               .IsDependentOn("build")
-               .IsDependentOn("test")
-               .IsDependentOn("pack")
-               .IsDependentOn("archive")
-               .Does(() => {
+Task("release-build").IsDependentOn("build")
+                     .IsDependentOn("test")
+                     .IsDependentOn("pack")
+                     .IsDependentOn("archive")
+                     .IsDependentOn("upload-artifacts")
+                     .IsDependentOn("push-package")
+                     .Does(() => {
+                       Information("Release build completed");
+                     });
 
-               });
+Task("regular-build").IsDependentOn("build")
+                     .IsDependentOn("test")
+                     .IsDependentOn("pack")
+                     .IsDependentOn("archive")
+                     .IsDependentOn("upload-artifacts")
+                     .Does(() => {
+                       Information("Regular build completed");
+                     });
 
-Task("default").Does(() => {
-  Information("Running default CI build pipeline for Case.NET...");
-
-  // RunTarget("build");
-  // RunTarget("test");
-  // RunTarget("pack");
-  // RunTarget("archive");
-  var r = RunTarget("upload-artifacts");
-
-  if(r.Any(e => e.ExecutionStatus == CakeTaskExecutionStatus.Failed)) {
-    throw new CakeException("Pipeline failed");
-  }
-
-  if(IsTag) {
-    RunTarget("push-package");
-  }
-});
-
-var report = RunTarget("default");
-
-if(report.Any(entry => entry.ExecutionStatus == CakeTaskExecutionStatus.Failed)) {
-  throw new CakeException("Failed to run build pipeline");
+if(IsTag) {
+  Information("Tag build detected, running release build...");
+  RunTarget("release-build");
+} else {
+  Information("Running regular build...");
+  RunTarget("regular-build");
 }

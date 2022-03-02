@@ -3,10 +3,6 @@
     <Version>0.1.0</Version>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(CI)' == 'True'">
-    <Version>$(Version.Split('.')[0]).$(Version.Split('.')[1]).$(APPVEYOR_BUILD_NUMBER)</Version>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(CUSTOM_VERSION)' == 'true'">
     <Version>$(CUSTOM_VERSION_VALUE)</Version>
   </PropertyGroup>
