@@ -193,7 +193,7 @@ Task("default").Does(() => {
   } else {
     Information("Running default CI build pipeline (build + test)...");
 
-    RunTarget("test");
+    RunTarget("pack");
 
     Information("Build success!");
   }
