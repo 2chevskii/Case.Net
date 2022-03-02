@@ -2,9 +2,9 @@ using System.Text.RegularExpressions;
 using Path = System.IO.Path;
 
 
-// if(EnvironmentVariable("CI")?.ToLower() != "true") {
-//   throw new CakeException("Build failed: non-CI environments are not supported, use standard dotnet tools instead");
-// }
+if(EnvironmentVariable("CI")?.ToLower() != "true") {
+  throw new CakeException("Build failed: non-CI environments are not supported, use standard dotnet tools instead");
+}
 
 const string CONFIGURATION = "Release";
 const string RUN_TASK = "default";
@@ -58,7 +58,7 @@ readonly string NugetApiKey = EnvironmentVariable("NUGET_API_KEY");
 
   var peekVer = XmlPeek(VersionProj, "/Project/PropertyGroup/Version");
 
-  var mm = peekVer.Split('.')[1..2];
+  var mm = peekVer.Split('.')[0..1];
   var p = BuildNumber.ToString();
 
   var core = $"{string.Join(".", mm)}.{p}";
@@ -157,7 +157,7 @@ Task("pack").IsDependentOn("build").IsDependentOn("test").Does(() => {
   Information("Packing done");
 });
 
-Task("archive").IsDependentOn("build").IsDependentOn("test").Does(() => {
+Task("archive").IsDependentOn("pack").Does(() => {
   Information("Packing built files into zip archives...");
 
   Information("Compressing netstandard2.0 configuration build:\n{0} -> {1}", NetStandard20Dir, NetStandard20Zip);
@@ -168,10 +168,7 @@ Task("archive").IsDependentOn("build").IsDependentOn("test").Does(() => {
   Information("Done");
 });
 
-Task("upload-artifacts").IsDependentOn("build")
-                        .IsDependentOn("test")
-                        .IsDependentOn("archive")
-                        .IsDependentOn("set-version")
+Task("upload-artifacts").IsDependentOn("archive")
                         .Does(() => {
                           Information("Uploading build artifacts to AppVeyor");
                           var packagePath = GetPackagePath(EnvironmentVariable("CUSTOM_VERSION_VALUE"));
@@ -186,11 +183,7 @@ Task("upload-artifacts").IsDependentOn("build")
                           AppVeyor.UploadArtifact(NetStandard21Zip);
                         });
 
-Task("push-package").IsDependentOn("build")
-                    .IsDependentOn("test")
-                    .IsDependentOn("pack")
-                    .IsDependentOn("set-version")
-                    .Does(() => {
+Task("push-package").Does(() => {
                       var version = EnvironmentVariable("CUSTOM_VERSION_VALUE");
                       Information("Pushing new release to NuGet feed (Case.NET v{0})...", version);
 
@@ -215,15 +208,23 @@ Task("release").IsDependentOn("set-version")
 Task("default").Does(() => {
   Information("Running default CI build pipeline for Case.NET...");
 
-  RunTarget("build");
-  RunTarget("test");
-  RunTarget("pack");
-  RunTarget("archive");
-  RunTarget("upload-artifacts");
+  // RunTarget("build");
+  // RunTarget("test");
+  // RunTarget("pack");
+  // RunTarget("archive");
+  var r = RunTarget("upload-artifacts");
+
+  if(r.Any(e => e.ExecutionStatus == CakeTaskExecutionStatus.Failed)) {
+    throw new CakeException("Pipeline failed");
+  }
 
   if(IsTag) {
     RunTarget("push-package");
   }
 });
 
-RunTarget("default");
+var report = RunTarget("default");
+
+if(report.Any(entry => entry.ExecutionStatus == CakeTaskExecutionStatus.Failed)) {
+  throw new CakeException("Failed to run build pipeline");
+}
