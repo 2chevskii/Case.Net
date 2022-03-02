@@ -34,7 +34,7 @@ readonly string GitHubPat = EnvironmentVariable("GITHUB_PAT");
     throw new FormatException("Wrong release tag format: " + TagName);
   }
 
-  var core = match.Groups[1].Value;
+  var core = match.Groups[1].Value + BuildNumber.ToString();
   var suffix = match.Groups[2].Success
   ? match.Groups[2].Value
   : string.Empty;
