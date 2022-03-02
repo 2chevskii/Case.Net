@@ -56,7 +56,7 @@ readonly string NugetApiKey = EnvironmentVariable("NUGET_API_KEY");
     suffix = branchName.ToLower();
   }
 
-  var peekVer = XmlPeek(VersionProj, "//Project/PropertyGroup/Version");
+  var peekVer = XmlPeek(VersionProj, "/Project/PropertyGroup/Version");
 
   var mm = peekVer.Split('.')[1..2];
   var p = BuildNumber.ToString();
