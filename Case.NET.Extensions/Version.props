@@ -4,6 +4,6 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(CUSTOM_VERSION)' == 'true'">
-    <Version>$(CUSTOM_VERSION_MAIN)</Version>
+    <Version>$(CUSTOM_VERSION_EXT)</Version>
   </PropertyGroup>
 </Project>
