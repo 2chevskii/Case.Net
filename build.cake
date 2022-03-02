@@ -1,32 +1,51 @@
 using System.Text.RegularExpressions;
 using Path = System.IO.Path;
+using System;
 
 const string CONFIGURATION = "Release";
 const string NUGET_SOURCE = "https://api.nuget.org/v3/index.json";
-const string RUN_TASK = "default";
 readonly bool IsTag = EnvironmentVariable("APPVEYOR_REPO_TAG")?.ToLower() == "true";
 readonly string TagName = EnvironmentVariable("APPVEYOR_REPO_TAG_NAME", string.Empty);
 readonly int BuildNumber = EnvironmentVariable("APPVEYOR_BUILD_NUMBER", 0);
+readonly string NugetApiKey = EnvironmentVariable("NUGET_API_KEY");
+readonly string GitHubPat = EnvironmentVariable("GITHUB_PAT");
 readonly string Cwd = Path.GetFullPath(".");
-readonly string Bin = Path.Combine(Cwd, "bin/");
-readonly string MainProj = Path.Combine(Cwd, "Case.NET.csproj");
-readonly string TestProj = Path.GetFullPath("../Case.NET.Test/Case.NET.Test.csproj");
-readonly string VersionProj = Path.Combine(Cwd, "Version.props");
 readonly Regex TagNameSanitizeRegex = new(
   @"Case\.NETv(\d\.\d)(?:-([a-z-\.0-9]+))?",
   RegexOptions.Compiled | RegexOptions.IgnoreCase
 );
-readonly string ConfigurationBin = Path.Combine(Bin, CONFIGURATION);
-readonly Func<string,string> GetPackagePath = version =>
-  Path.Combine(ConfigurationBin, $"Case.NET.{version}.nupkg");
-readonly string NetStandard20Dir = Path.Combine(ConfigurationBin, "netstandard2.0");
-readonly string NetStandard21Dir = Path.Combine(ConfigurationBin, "netstandard2.1");
-readonly string NetStandard20Zip = Path.Combine(ConfigurationBin, "Case.NET_netstandard2.0.zip");
-readonly string NetStandard21Zip = Path.Combine(ConfigurationBin, "Case.NET_netstandard2.1.zip");
-readonly Func<string, string, string> GetVersionName = (core, suffix) =>
-  $"{core}{(suffix == string.Empty ? string.Empty : $"-{suffix}")}";
-readonly string NugetApiKey = EnvironmentVariable("NUGET_API_KEY");
-readonly string GitHubPat = EnvironmentVariable("GITHUB_PAT");
+
+ReleaseType GetReleaseType() {
+  if(!IsTag) {
+    return ReleaseType.NONE;
+  }
+
+  if(!TagName.StartsWith("release/")) {
+    return ReleaseType.NONE;
+  }
+
+
+}
+
+string[] ReadProjectVersion(string projectPath) {
+  var version = XmlPeek(projectPath, "/Project/PropertyGroup[1]/Version");
+
+  return version.Split('.');
+}
+
+string ReadVersionFromTag() {
+  if(!TagName.StartsWith("release/")) {
+    throw new CakeException("Failed to read release version from tag name: Invalid tag format")
+  }
+}
+
+string GetCustomVersion(bool fromTag) {
+  if(fromTag) {
+
+  } else {
+
+  }
+}
 
 (string, string) GetVersionFromTag() {
   var match = TagNameSanitizeRegex.Match(TagName);
@@ -235,14 +254,56 @@ Task("regular-build").IsDependentOn("build")
                        Information("Regular build completed");
                      });
 
-if(EnvironmentVariable("CI")?.ToLower() != "true") {
-  throw new CakeException("Build failed: non-CI environments are not supported, use standard dotnet tools instead");
+// if(EnvironmentVariable("CI")?.ToLower() != "true") {
+//   throw new CakeException("Build failed: non-CI environments are not supported, use standard dotnet tools instead");
+// }
+
+// if(IsTag) {
+//   Information("Tag build detected, running release build...");
+//   RunTarget("release-build");
+// } else {
+//   Information("Running regular build...");
+//   RunTarget("regular-build");
+// }
+
+readonly struct ProjectPath {
+  public readonly string Root;
+  public readonly string Bin;
+  public readonly string Release;
+  public readonly string NetStandard20;
+  public readonly string NetStandard21;
+  public readonly string NetStandard20Zip;
+  public readonly string NetStandard21Zip;
+  public readonly Func<string, string> Package;
+  public readonly Func<string, string> SymbolsPackage;
+  public readonly string MainProj;
+  public readonly string TestProj;
+  public readonly string VersionProps;
+
+  public ProjectPath(string cwd, string root, string packageName) {
+    Root = Path.GetFullPath(root);
+    Bin = Path.Combine(Root, "bin/");
+    Release = Path.Combine(Bin, CONFIGURATION);
+    NetStandard20 = Path.Combine(Release, "netstandard2.0");
+    NetStandard21 = Path.Combine(Release, "netstandard2.1");
+    NetStandard20Zip = NetStandard20 + ".zip";
+    NetStandard21Zip = NetStandard21 + ".zip";
+
+    string releaseLocal = Release;
+    Package = version => Path.Combine(releaseLocal, $"{packageName}.{version}.nupkg");
+    SymbolsPackage = version => Path.Combine(releaseLocal,  $"{packageName}.{version}.snupkg");
+
+    string fnwe = Path.GetFileNameWithoutExtension(root);
+
+    MainProj = Path.Combine(Root, $"{fnwe}.csproj");
+    TestProj = Path.GetFullPath(Path.Combine(cwd, $"{fnwe}.Test/{fnwe}.Test.csproj"));
+    VersionProps = Path.Combine(Root, "Version.props");
+  }
 }
 
-if(IsTag) {
-  Information("Tag build detected, running release build...");
-  RunTarget("release-build");
-} else {
-  Information("Running regular build...");
-  RunTarget("regular-build");
+[Flags]
+enum ReleaseType {
+  NONE = 0,
+  MAIN = 2,
+  EXTENSIONS = 4
 }
