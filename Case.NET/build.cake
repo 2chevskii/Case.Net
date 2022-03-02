@@ -170,8 +170,8 @@ Task("default").Does(() => {
 
       Information("Pushing package artifacts to NuGet...");
 
-      var packagePath = Path.Combine(getConfigurationDir("Release"), $"Case.NET-{resultVersion}.nupkg");
-      var symbolPackagePath = Path.Combine(getConfigurationDir("Release"), $"Case.NET-{resultVersion}.snupkg");
+      var packagePath = Path.Combine(getConfigurationDir("Release"), $"Case.NET.{resultVersion}.nupkg");
+      var symbolPackagePath = Path.Combine(getConfigurationDir("Release"), $"Case.NET.{resultVersion}.snupkg");
 
       var pushSettings = new NuGetPushSettings {ApiKey = EnvironmentVariable("NUGET_API_KEY")};
 
@@ -218,7 +218,7 @@ Task("default").Does(() => {
 
     RunTarget("pack");
 
-    var packagePath = Path.Combine(getConfigurationDir("Release"), $"Case.NET-0.1.{buildNumber}.nupkg");
+    var packagePath = Path.Combine(getConfigurationDir("Release"), $"Case.NET.0.1.{buildNumber}.nupkg");
 
     Information("Creating archives from build directories...");
 
