@@ -2,9 +2,9 @@ using System.Text.RegularExpressions;
 using Path = System.IO.Path;
 
 
-if(EnvironmentVariable("CI")?.ToLower() != "true") {
-  throw new CakeException("Build failed: non-CI environments are not supported, use standard dotnet tools instead");
-}
+// if(EnvironmentVariable("CI")?.ToLower() != "true") {
+//   throw new CakeException("Build failed: non-CI environments are not supported, use standard dotnet tools instead");
+// }
 
 const string CONFIGURATION = "Release";
 const string RUN_TASK = "default";
