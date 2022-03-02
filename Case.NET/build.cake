@@ -25,6 +25,7 @@ readonly string NetStandard21Zip = Path.Combine(ConfigurationBin, "Case.NET_nets
 readonly Func<string, string, string> GetVersionName = (core, suffix) =>
   $"{core}{(suffix == string.Empty ? string.Empty : $"-{suffix}")}";
 readonly string NugetApiKey = EnvironmentVariable("NUGET_API_KEY");
+readonly string GitHubPat = EnvironmentVariable("GITHUB_PAT");
 
 (string, string) GetVersionFromTag() {
   var match = TagNameSanitizeRegex.Match(TagName);
@@ -189,7 +190,27 @@ Task("push-package").Does(() => {
                       NuGetPush(GetPackagePath(EnvironmentVariable("CUSTOM_VERSION_VALUE")), new NuGetPushSettings {
                         ApiKey = NugetApiKey,
                       });
+
+                      NuGetPush(GetPackagePath(EnvironmentVariable("CUSTOM_VERSION_VALUE")).Replace("nupkg", "snupkg"), new NuGetPushSettings {
+                        ApiKey = NugetApiKey,
+                      });
                     });
+
+Task("create-github-release").Does(() => {
+  Information("Creating new GitHub release...");
+
+  var version = EnvironmentVariable("CUSTOM_VERSION_VALUE");
+  var releaseName = $"Case.NET v{version}";
+
+  Information($"Release name: {releaseName}");
+
+  GitReleaseManagerCreate(GitHubPat, "2chevskii", "Case.NET", new GitReleaseManagerCreateSettings {
+    Prerelease = version.Contains("-"),
+    Name = releaseName,
+    TargetCommitish = AppVeyor.Environment.Repository.Commit.Id,
+    Assets = ConfigurationBin + "/" + "*.{zip,nupkg,snupkg}"
+  });
+});
 
 Task("release-build").IsDependentOn("build")
                      .IsDependentOn("test")
@@ -197,6 +218,7 @@ Task("release-build").IsDependentOn("build")
                      .IsDependentOn("archive")
                      .IsDependentOn("upload-artifacts")
                      .IsDependentOn("push-package")
+                     .IsDependentOn("create-github-release")
                      .Does(() => {
                        Information("Release build completed");
                      });

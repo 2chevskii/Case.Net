@@ -1,9 +1,11 @@
 image: Visual Studio 2022
-version: '{build}'
+version: '#{build}'
 clone_depth: 1
 environment:
   NUGET_API_KEY:
     secure: WkoebXl/PywsjkXpssKTZLndjn1sie9o6Rarisx5dtSHDnNTQCbQNf/xPE/2meGO
+  GITHUB_PAT:
+    secure: h1tLqkBt5SP2X/gyu9+SE5hjkmBvldDcPiMsNgwjDfKFqh++aLZMbPZrFytrX2YJ
 install:
   - pwsh: dotnet new tool-manifest
   - pwsh: dotnet tool install Cake.Tool --version 2.1.0
@@ -17,8 +19,6 @@ build_script:
   - pwsh: dotnet cake ./Case.NET/build.cake
   # - pwsh: dotnet cake ./Case.NET.Extensions/build.cake --configuration Release
 test: false # build script will run all the tests automatically
-# artifacts:
-#   - path: '**/*.nupkg'
 for:
   - only_commits:
       files:
