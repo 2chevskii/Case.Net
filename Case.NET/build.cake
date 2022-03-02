@@ -182,6 +182,29 @@ Task("default").Does(() => {
       NuGetPush(symbolPackagePath, pushSettings);
 
       Information("All packages were successfully pushed to NuGet!");
+
+      Information("Creating archives from build directories...");
+
+      var configDir = getConfigurationDir("Release");
+      var netstandard20Dir = Path.Combine(configDir, "netstandard2.0/");
+      var netstandard21Dir = Path.Combine(configDir, "netstandard2.1/");
+      var netstandard20Zip = Path.Combine(configDir, "netstandard2.0.zip");
+      var netstandard21Zip = Path.Combine(configDir, "netstandard2.1.zip");
+      Zip(netstandard20Dir, netstandard20Zip);
+      Zip(netstandard21Dir, netstandard21Zip);
+
+      Information("Uploading build artifacts to AppVeyor...");
+
+      Information("Uploading NuGet package...");
+      AppVeyor.UploadArtifact(packagePath);
+
+      Information("Uploading netstandard2.0 archive...");
+      AppVeyor.UploadArtifact(netstandard20Zip);
+
+      Information("Uploading netstandard2.1 archive...");
+      AppVeyor.UploadArtifact(netstandard21Zip);
+
+      Information("Done!");
     } catch(FormatException e) {
       Error("Exception occured during tag version retrieval:\n{0}", e.Message);
 
@@ -194,6 +217,29 @@ Task("default").Does(() => {
     Information("Running default CI build pipeline (build + test)...");
 
     RunTarget("pack");
+
+    var packagePath = Path.Combine(getConfigurationDir("Release"), $"Case.NET-0.1.{buildNumber}.nupkg");
+
+    Information("Creating archives from build directories...");
+
+    var configDir = getConfigurationDir("Release");
+    var netstandard20Dir = Path.Combine(configDir, "netstandard2.0/");
+    var netstandard21Dir = Path.Combine(configDir, "netstandard2.1/");
+    var netstandard20Zip = Path.Combine(configDir, "netstandard2.0.zip");
+    var netstandard21Zip = Path.Combine(configDir, "netstandard2.1.zip");
+    Zip(netstandard20Dir, netstandard20Zip);
+    Zip(netstandard21Dir, netstandard21Zip);
+
+    Information("Uploading build artifacts to AppVeyor...");
+
+    Information("Uploading NuGet package...");
+    AppVeyor.UploadArtifact(packagePath);
+
+    Information("Uploading netstandard2.0 archive...");
+    AppVeyor.UploadArtifact(netstandard20Zip);
+
+    Information("Uploading netstandard2.1 archive...");
+    AppVeyor.UploadArtifact(netstandard21Zip);
 
     Information("Build success!");
   }

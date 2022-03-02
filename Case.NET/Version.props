@@ -4,7 +4,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(CI)' == 'True'">
-    <Version>$(Version.Split('.')[0])$(Version.Split('.')[1])$(APPVEYOR_BUILD_NUMBER)</Version>
+    <Version>$(Version.Split('.')[0]).$(Version.Split('.')[1]).$(APPVEYOR_BUILD_NUMBER)</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(CUSTOM_VERSION)' == 'true'">
