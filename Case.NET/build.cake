@@ -2,6 +2,7 @@ using System.Text.RegularExpressions;
 using Path = System.IO.Path;
 
 const string CONFIGURATION = "Release";
+const string NUGET_SOURCE = "https://api.nuget.org/v3/index.json";
 const string RUN_TASK = "default";
 readonly bool IsTag = EnvironmentVariable("APPVEYOR_REPO_TAG")?.ToLower() == "true";
 readonly string TagName = EnvironmentVariable("APPVEYOR_REPO_TAG_NAME", string.Empty);
@@ -189,10 +190,12 @@ Task("push-package").Does(() => {
 
                       NuGetPush(GetPackagePath(EnvironmentVariable("CUSTOM_VERSION_VALUE")), new NuGetPushSettings {
                         ApiKey = NugetApiKey,
+                        Source = NUGET_SOURCE
                       });
 
                       NuGetPush(GetPackagePath(EnvironmentVariable("CUSTOM_VERSION_VALUE")).Replace("nupkg", "snupkg"), new NuGetPushSettings {
                         ApiKey = NugetApiKey,
+                        Source = NUGET_SOURCE
                       });
                     });
 
