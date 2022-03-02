@@ -1,5 +1,5 @@
 image: Visual Studio 2022
-version: 0.1.{build} # probably should just use {build}
+version: '{build}'
 clone_depth: 1
 environment:
   NUGET_API_KEY:
@@ -14,7 +14,7 @@ skip_commits:
     - ./LICENSE
     - ./README.md
 build_script:
-  - pwsh: dotnet cake ./Case.NET/build.cake --configuration Release
+  - pwsh: dotnet cake ./Case.NET/build.cake
   # - pwsh: dotnet cake ./Case.NET.Extensions/build.cake --configuration Release
 test: false # build script will run all the tests automatically
 # artifacts:
@@ -25,7 +25,7 @@ for:
         - Case.NET/
         - Case.NET.Test/
     build_script:
-      - pwsh: dotnet cake ./Case.NET/build.cake --configuration Release
+      - pwsh: dotnet cake ./Case.NET/build.cake
   # - only_commits:
   #     files:
   #       - Case.NET.Extensions/
