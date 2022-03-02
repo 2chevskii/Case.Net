@@ -23,7 +23,7 @@ readonly string NetStandard21Dir = Path.Combine(ConfigurationBin, "netstandard2.
 readonly string NetStandard20Zip = Path.Combine(ConfigurationBin, "Case.NET_netstandard2.0.zip");
 readonly string NetStandard21Zip = Path.Combine(ConfigurationBin, "Case.NET_netstandard2.1.zip");
 readonly Func<string, string, string> GetVersionName = (core, suffix) =>
-  $"{core}.{BuildNumber}{(suffix == string.Empty ? string.Empty : $"-{suffix}")}";
+  $"{core}{(suffix == string.Empty ? string.Empty : $"-{suffix}")}";
 readonly string NugetApiKey = EnvironmentVariable("NUGET_API_KEY");
 
 (string, string) GetVersionFromTag() {
