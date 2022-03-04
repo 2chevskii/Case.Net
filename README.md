@@ -41,7 +41,29 @@ For the same reason `Parser.Universal` is a *property*, returning new instance e
 
 ## Usage
 
-> TODO
+> NuGet package is listed under name of `CaseDotNet` since `Case.NET` was reserved
+
+### Installation
+
+`Install-Package CaseDotNet -Version 0.3.0`
+
+### Include namespace
+
+```cs
+using Case.NET
+```
+
+### Using built-in converters
+
+Class `Case.NET.CaseConverter` contains static fields with built-in converters under corresponding names:
+
+```cs
+static void Main(string[] args) {
+  CasedString converted = CaseConverter.CamelCase.ConvertCase("not_camel_case");
+
+  Console.WriteLine((string)converted); // notCamelCase
+}
+```
 
 ## Currently supported conventions (as target)
 

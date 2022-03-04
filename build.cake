@@ -250,7 +250,7 @@ Task("create-release").Does(() => {
 
     GitReleaseManagerCreate(GitHubPat, "2chevskii", "Case.NET", new GitReleaseManagerCreateSettings {
       Prerelease = v.Contains("-"),
-      Name = "Case.NET.Extensions v " + v,
+      Name = "Case.NET.Extensions v" + v,
       TargetCommitish = AppVeyor.Environment.Repository.Tag.Name,
       Assets = Path.Combine(ExtProjBin, "*.{zip,nupkg,snupkg}")
     });
