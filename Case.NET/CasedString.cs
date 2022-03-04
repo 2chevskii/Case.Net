@@ -49,5 +49,10 @@ namespace Case.NET
 
             return converter.ConvertCase(value);
         }
+
+        public override string ToString()
+        {
+            return Value;
+        }
     }
 }
