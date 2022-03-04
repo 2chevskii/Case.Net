@@ -2,7 +2,7 @@ using static Case.NET.CaseConverter;
 
 namespace Case.NET.Extensions
 {
-    public static class ConvertedStringExtensions
+    public static class CasedStringExtensions
     {
         public static CasedString ToCamelCase(this CasedString self, bool forceParse =  false)
         {
