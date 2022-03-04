@@ -1,4 +1,5 @@
-# Case.NET
+<!-- markdownlint-disable-next-line -->
+![logo](logo.svg)
 
 String manipulation library built with intention to make naming conventions conversion easy
 
