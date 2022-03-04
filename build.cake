@@ -326,6 +326,8 @@ Task("release-pipeline-ext").IsDependentOn("archive-ext")
 //   throw new CakeException(1, "Build failed: non-CI environments are not supported, use standard dotnet tools instead");
 // }
 
+throw new CakeException(1, "Build failed: this is intentional");
+
 CakeReport report;
 
 if(IsReleaseTag) {
