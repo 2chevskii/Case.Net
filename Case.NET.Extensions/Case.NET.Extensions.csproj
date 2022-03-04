@@ -24,7 +24,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Case.NET\Case.NET.csproj" />
+    <PackageReference Include="CaseDotNet" Version="0.3.36" />
   </ItemGroup>
 
   <ItemGroup>
