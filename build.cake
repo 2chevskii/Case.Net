@@ -1,3 +1,5 @@
+#tool "nuget:?package=gitreleasemanager&version=0.13.0"
+
 using System;
 using Cake.Core;
 using System.Text.RegularExpressions;
