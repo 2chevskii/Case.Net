@@ -64,11 +64,17 @@ string ReadProjectVersion(string projectPath) => XmlPeek(
 );
 
 string GetCustomVersion(string ver) {
-  var splt = ver.Split('.');
+  var regex = new Regex(@"(\d+)(?:\.(\d+))(?:\.(\d+))(?:-([-\.a-z0-9]+))", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+  var bn = BuildNumber.ToString();
 
-  splt[2] = BuildNumber.ToString();
+  var match = regex.Match(ver);
 
-  return string.Join(".", splt);
+  var major = match.Groups[1].Value;
+  var minor = match.Groups[2].Value ?? "0";
+  var patch = match.Groups[3].Value ?? "0";
+  var suffix = match.Groups[4].Value ?? string.Empty;
+
+  return $"{major}.{minor}.{bn}" + (suffix.Length == 0 ? string.Empty : ("-" + suffix));
 }
 
 Information("--- Build started for Case.NET ---");
@@ -287,9 +293,7 @@ Task("regular-pipeline").IsDependentOn("archive-main")
                         });
 
 Task("release-pipeline-main").IsDependentOn("archive-main")
-                             .IsDependentOn("archive-ext")
                              .IsDependentOn("pack-main")
-                             .IsDependentOn("pack-ext")
                              .IsDependentOn("push-package-main")
                              .IsDependentOn("create-release")
                              .IsDependentOn("upload-artifacts")
@@ -300,9 +304,7 @@ Task("release-pipeline-main").IsDependentOn("archive-main")
                               );
                              });
 
-Task("release-pipeline-ext").IsDependentOn("archive-main")
-                            .IsDependentOn("archive-ext")
-                            .IsDependentOn("pack-main")
+Task("release-pipeline-ext").IsDependentOn("archive-ext")
                             .IsDependentOn("pack-ext")
                             .IsDependentOn("push-package-ext")
                             .IsDependentOn("create-release")
