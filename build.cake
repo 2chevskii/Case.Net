@@ -1,167 +1,159 @@
+using System;
+using Cake.Core;
 using System.Text.RegularExpressions;
 using Path = System.IO.Path;
-using System;
+using FileIO = System.IO.File;
+
+/*
+  Strategy:
+    Regular commit or tag:
+      build all -> build all tests -> test all -> pack nuget all -> archive built all -> upload to artifacts
+    Tag starting from release/:
+      if release/main/<version>:
+        build case.net -> build case.net.test -> test case.net -> pack nuget case.net -> archive built case.net -> upload to artifacts
+        -> create new github release "Case.NET v<version>" -> push CaseDotNet to nuget
+      if release/ext/<version>:
+        build case.net.extensions -> build case.net.extensions.test -> test case.net.extensions -> pack nuget case.net.extensions
+        -> archive built case.net.extensions -> create new github release "Case.NET.Extensions v<version>" -> push CaseDotNet.Extensions to nuget
+*/
 
 const string CONFIGURATION = "Release";
 const string NUGET_SOURCE = "https://api.nuget.org/v3/index.json";
-readonly bool IsTag = EnvironmentVariable("APPVEYOR_REPO_TAG")?.ToLower() == "true";
+const string NS_20 = "netstandard2.0";
+const string NS_21 = "netstandard2.1";
+const string CDN = "CaseDotNet";
+const string CDNE = "CaseDotNet.Extensions";
+
 readonly string TagName = EnvironmentVariable("APPVEYOR_REPO_TAG_NAME", string.Empty);
 readonly int BuildNumber = EnvironmentVariable("APPVEYOR_BUILD_NUMBER", 0);
 readonly string NugetApiKey = EnvironmentVariable("NUGET_API_KEY");
 readonly string GitHubPat = EnvironmentVariable("GITHUB_PAT");
 readonly string Cwd = Path.GetFullPath(".");
-readonly Regex TagNameSanitizeRegex = new(
-  @"Case\.NETv(\d\.\d)(?:-([a-z-\.0-9]+))?",
-  RegexOptions.Compiled | RegexOptions.IgnoreCase
+readonly bool IsReleaseTag = EnvironmentVariable("APPVEYOR_REPO_TAG")?.ToLower() == "true" && TagName.StartsWith("release/");
+readonly bool IsMainRelease = IsReleaseTag && TagName.Split('/').Skip(1).FirstOrDefault() == "main";
+readonly bool IsExtRelease = IsReleaseTag && TagName.Split('/').Skip(1).FirstOrDefault() == "ext";
+readonly string ReleaseVersion = TagName.Split('/').Skip(2).FirstOrDefault() ?? string.Empty;
+readonly string MainProjDir = Path.GetFullPath("./Case.NET/");
+readonly string ExtProjDir = Path.GetFullPath("./Case.NET.Extensions/");
+readonly string MainProjPath = Path.Combine(MainProjDir, "Case.NET.csproj");
+readonly string ExtProjPath = Path.Combine(ExtProjDir, "Case.NET.Extensions.csproj");
+readonly string MainProjTest = Path.GetFullPath("./Case.NET.Test", "Case.NET.Test.csproj");
+readonly string ExtProjTest = Path.Combine("./Case.NET.Extensions.Test", "Case.NET.Extensions.Test.csproj");
+readonly string MainProjBin = Path.Combine(MainProjDir, "bin", CONFIGURATION);
+readonly string ExtProjBin = Path.Combine(ExtProjBin, "bin", CONFIGURATION);
+readonly Func<string, string, string> BuildOutputDir = (bin, target) =>
+  Path.Combine(bin, target);
+readonly Func<string, string, string, string> ArchiveOutputPath = (bin, name, target) =>
+  Path.Combine(bin, $"{name}_{target}.zip");
+readonly Func<string, string, string, string> PackageOutputPath = (bin, name, version) =>
+  Path.Combine(bin, $"{name}.{version}.nupkg");
+readonly Func<string, string, string, string> SymbolPackageOutputPath = (bin, name, version) =>
+  Path.Combine(bin, $"{name}.{version}.snupkg");
+
+List<string> ArtifactsList => new() {
+    ArchiveOutputPath(MainProjBin, "Case.NET", NS_20),
+    ArchiveOutputPath(MainProjBin, "Case.NET", NS_21),
+    ArchiveOutputPath(ExtProjBin, "Case.NET.Extensions", NS_20),
+    PackageOutputPath(MainProjBin, "CaseDotNet", EnvironmentVariable("CUSTOM_VERSION_MAIN")),
+    PackageOutputPath(ExtProjBin, "CaseDotNet.Extensions", EnvironmentVariable("CUSTOM_VERSION_EXT"))
+};
+
+string ReadProjectVersion(string projectPath) => XmlPeek(
+  Path.Combine(Path.GetDirectoryName(projectPath), "Version.props"),
+  "/Project/PropertyGroup[1]/Version"
 );
 
-ReleaseType GetReleaseType() {
-  if(!IsTag) {
-    return ReleaseType.NONE;
-  }
+string GetCustomVersion(string ver) {
+  var splt = ver.Split('.');
 
-  if(!TagName.StartsWith("release/")) {
-    return ReleaseType.NONE;
-  }
+  splt[2] = BuildNumber.ToString();
 
-
-}
-
-string[] ReadProjectVersion(string projectPath) {
-  var version = XmlPeek(projectPath, "/Project/PropertyGroup[1]/Version");
-
-  return version.Split('.');
-}
-
-string ReadVersionFromTag() {
-  if(!TagName.StartsWith("release/")) {
-    throw new CakeException("Failed to read release version from tag name: Invalid tag format")
-  }
-}
-
-string GetCustomVersion(bool fromTag) {
-  if(fromTag) {
-
-  } else {
-
-  }
-}
-
-(string, string) GetVersionFromTag() {
-  var match = TagNameSanitizeRegex.Match(TagName);
-
-  if(!match.Success) {
-    throw new FormatException("Wrong release tag format: " + TagName);
-  }
-
-  var core = match.Groups[1].Value + $".{BuildNumber}";
-  var suffix = match.Groups[2].Success
-  ? match.Groups[2].Value
-  : string.Empty;
-
-  return (core, suffix);
-}
-
-(string, string) GetVersionFromBranch() {
-  var branchName = AppVeyor.Environment.Repository.Branch;
-  string suffix;
-
-  if(branchName == "master") {
-    suffix = string.Empty;
-  } else {
-    suffix = branchName.ToLower();
-  }
-
-  var peekVer = XmlPeek(VersionProj, "/Project/PropertyGroup/Version");
-
-  var mm = peekVer.Split('.')[0..2];
-  var p = BuildNumber.ToString();
-
-  var core = $"{string.Join(".", mm)}.{p}";
-
-  return (core, suffix);
+  return string.Join(".", splt);
 }
 
 Information("--- Build started for Case.NET ---");
 Information("Current working directory: {0}", Cwd);
-Information("Bin directory: {0}", Bin);
-Information("Case.NET project path: {0}", MainProj);
-Information("Case.NET.Test project path: {0}", TestProj);
+// Information("Bin directory: {0}", Bin);
+// Information("Case.NET project path: {0}", MainProj);
+// Information("Case.NET.Test project path: {0}", TestProj);
 
-Task("set-version").Does(() => {
-  Information("Setting custom build version...");
+Task("build-main").IsDependentOn("resolve-version").Does(() => {
+  Information("Building Case.NET v{0}...", EnvironmentVariable("CUSTOM_VERSION_MAIN"));
 
-  (string, string) tuple;
-
-  if(IsTag) {
-    Information("Using version from tag name...");
-    tuple = GetVersionFromTag();
-  } else {
-    Information("Using version from branch and project...");
-    tuple = GetVersionFromBranch();
-  }
-
-  var (core, suffix) = tuple;
-
-  var version = GetVersionName(core, suffix);
-
-  Information("Setting CUSTOM_VERSION to true");
-  Environment.SetEnvironmentVariable("CUSTOM_VERSION", "true");
-
-  Information("Setting CUSTOM_VERSION_VALUE to {0}", version);
-  Environment.SetEnvironmentVariable("CUSTOM_VERSION_VALUE", version);
-});
-
-Task("build").IsDependentOn("set-version").Does(() => {
-  Information("Building Case.NET v{0}...", EnvironmentVariable("CUSTOM_VERSION_VALUE"));
-
-  Verbose("Restoring project dependencies...");
-  DotNetRestore(Cwd);
-
-  Verbose("Running .NET build...");
-  DotNetBuild(MainProj, new DotNetBuildSettings {
+  DotNetBuild(MainProjPath, new DotNetBuildSettings {
     Configuration = CONFIGURATION,
-    NoRestore = true,
     Verbosity = DotNetVerbosity.Minimal
   });
-
-  Information("Project build success");
 });
 
-Task("build-tests").IsDependentOn("build").Does(() => {
-  Information("Building Case.NET.Tests...");
+Task("build-main-test").IsDependentOn("build-main").Does(() => {
+  Information("Building Case.NET.Test...");
 
-  Verbose("Restoring project dependencies...");
-  DotNetRestore(Path.GetDirectoryName(TestProj));
-
-  Verbose("Running .NET build...");
-  DotNetBuild(TestProj, new DotNetBuildSettings {
+  DotNetBuild(MainProjTest, new DotNetBuildSettings {
     Configuration = CONFIGURATION,
+    Verbosity = DotNetVerbosity.Minimal,
+    NoDependencies = true
+  });
+});
+
+Task("test-main").IsDependentOn("build-main-test").Does(() => {
+  Information("Running unit tests on Case.NET v{0}...", EnvironmentVariable("CUSTOM_VERSION_MAIN"));
+
+  DotNetTest(MainProjTest, new DotNetTestSettings {
+    Configuration = CONFIGURATION,
+    Verbosity = DotNetVerbosity.Minimal,
     NoRestore = true,
-    NoDependencies = true,
+    NoBuild = true
+  });
+});
+
+Task("build-ext").IsDependentOn("resolve-version").Does(() => {
+  Information("Building Case.NET.Extensions v{0}", EnvironmentVariable("CUSTOM_VERSION_EXT"));
+
+  DotNetBuild(ExtProjPath, new DotNetBuildSettings {
+    Configuration = CONFIGURATION,
     Verbosity = DotNetVerbosity.Minimal
   });
-
-  Information("Tests build success");
 });
 
-Task("test").IsDependentOn("build-tests").Does(() => {
-  Information("Running Case.NET unit tests...");
+Task("build-ext-test").IsDependentOn("build-ext").Does(() => {
+  Information("Building Case.NET.Extensions.Test...");
 
-  DotNetTest(TestProj, new DotNetTestSettings {
+  DotNetBuild(ExtProjTest, new DotNetBuildSettings {
     Configuration = CONFIGURATION,
-    NoBuild = true,
-    NoRestore = true,
-    Verbosity = DotNetVerbosity.Normal
+    Verbosity = DotNetVerbosity.Minimal,
+    NoDependencies = true
   });
-
-  Information("Tests finished");
 });
 
-Task("pack").IsDependentOn("build").IsDependentOn("test").Does(() => {
-  Information("Creating NuGet package for Case.NET v{0}", EnvironmentVariable("CUSTOM_VERSION_VALUE"));
+Task("test-ext").IsDependentOn("build-ext").Does(() => {
+  Information("Running unit tests on Case.NET.Extensions v{0}", EnvironmentVariable("CUSTOM_VERSION_EXT"));
 
-  DotNetPack(MainProj, new DotNetPackSettings {
+  DotNetTest(ExtProjTest, new DotNetTestSettings {
+    Configuration = CONFIGURATION,
+    Verbosity = DotNetVerbosity.Minimal,
+    NoRestore = true,
+    NoBuild = true
+  });
+});
+
+Task("archive-main").IsDependentOn("build-main").IsDependentOn("test-main").Does(() => {
+  Information("Compressing build results of Case.NET...");
+
+  Zip(BuildOutputDir(MainProjBin, NS_20), ArchiveOutputPath(MainProjBin, "Case.NET", NS_20));
+  Zip(BuildOutputDir(MainProjBin, NS_21), ArchiveOutputPath(MainProjBin, "Case.NET", NS_21));
+});
+
+Task("archive-ext").IsDependentOn("build-ext").IsDependentOn("test-ext").Does(() => {
+  Information("Compressing build results of Case.NET.Extensions...");
+
+  Zip(BuildOutputDir(ExtProjBin, NS_20), ArchiveOutputPath(ExtProjBin, "Case.NET.Extensions", NS_20));
+});
+
+Task("pack-main").IsDependentOn("build-main").IsDependentOn("test-main").Does(() => {
+  Information("Creating NuGet package for Case.NET v{0}", EnvironmentVariable("CUSTOM_VERSION_MAIN"));
+
+  DotNetPack(MainProjPath, new DotNetPackSettings {
     Configuration = CONFIGURATION,
     IncludeSymbols = true,
     NoBuild = true,
@@ -169,69 +161,142 @@ Task("pack").IsDependentOn("build").IsDependentOn("test").Does(() => {
     NoDependencies = true,
     Verbosity = DotNetVerbosity.Minimal
   });
-
-  Information("Packing done");
 });
 
-Task("archive").IsDependentOn("pack").Does(() => {
-  Information("Packing built files into zip archives...");
+Task("pack-ext").IsDependentOn("build-ext").IsDependentOn("test-ext").Does(() => {
+  Information("Creating NuGet package for Case.NET.Extensions v{0}", EnvironmentVariable("CUSTOM_VERSION_EXT"));
 
-  Information("Compressing netstandard2.0 configuration build:\n{0} -> {1}", NetStandard20Dir, NetStandard20Zip);
-  Zip(NetStandard20Dir, NetStandard20Zip);
-  Information("Compressing netstandard2.1 configuration build:\n{0} -> {1}", NetStandard21Dir, NetStandard21Zip);
-  Zip(NetStandard21Dir, NetStandard21Zip);
-
-  Information("Done");
+  DotNetPack(ExtProjPath, new DotNetPackSettings {
+    Configuration = CONFIGURATION,
+    IncludeSymbols = true,
+    NoBuild = true,
+    NoRestore = true,
+    NoDependencies = true,
+    Verbosity = DotNetVerbosity.Minimal
+  });
 });
 
-Task("upload-artifacts").IsDependentOn("archive")
+Task("push-package-main").IsDependentOn("build-main")
+                         .IsDependentOn("test-main")
+                         .IsDependentOn("pack-main")
+                         .Does(() => {
+                           Information("Pushing Case.NET v{0} to NuGet...", EnvironmentVariable("CUSTOM_VERSION_MAIN"));
+
+                           NuGetPush(PackageOutputPath(MainProjBin, "CaseDotNet", EnvironmentVariable("CUSTOM_VERSION_MAIN")), new NuGetPushSettings {
+                             ApiKey = NugetApiKey,
+                             Source = NUGET_SOURCE,
+                           });
+                         });
+
+Task("push-package-ext").IsDependentOn("build-ext")
+                        .IsDependentOn("test-ext")
+                        .IsDependentOn("pack-ext")
                         .Does(() => {
-                          Information("Uploading build artifacts to AppVeyor");
-                          var packagePath = GetPackagePath(EnvironmentVariable("CUSTOM_VERSION_VALUE"));
+                          Information("Pushing Case.NET.Extensions v{0}", EnvironmentVariable("CUSTOM_VERSION_EXT"));
 
-                          Information("Uploading NuGet package");
-                          AppVeyor.UploadArtifact(packagePath);
-
-                          Information("Uploading netstandard2.0 archive");
-                          AppVeyor.UploadArtifact(NetStandard20Zip);
-
-                          Information("Uploading netstandard2.1 archive");
-                          AppVeyor.UploadArtifact(NetStandard21Zip);
+                          NuGetPush(PackageOutputPath(ExtProjBin, "CaseDotNet.Extensions", EnvironmentVariable("CUSTOM_VERSION_EXT")), new NuGetPushSettings {
+                            ApiKey = NugetApiKey,
+                            Source = NUGET_SOURCE
+                          });
                         });
 
-Task("push-package").Does(() => {
-                      var version = EnvironmentVariable("CUSTOM_VERSION_VALUE");
-                      Information("Pushing new release to NuGet feed (Case.NET v{0})...", version);
+Task("upload-artifacts").Does(() => {
+  Information("Uploading build artifacts to AppVeyor...");
 
-                      if(!IsTag) {
-                        throw new CakeException("Cannot push package from non-tag build!");
-                      }
+  List<string> artifacts = ArtifactsList;
 
-                      NuGetPush(GetPackagePath(EnvironmentVariable("CUSTOM_VERSION_VALUE")), new NuGetPushSettings {
-                        ApiKey = NugetApiKey,
-                        Source = NUGET_SOURCE
-                      });
+  foreach(var artifact in artifacts) {
+    if(FileIO.Exists(artifact)) {
+      Information("Uploading artifact: {0}", artifact);
+      AppVeyor.UploadArtifact(artifact);
+    } else {
+      Information("Artifact not found: {0}", artifact);
+    }
+  }
+});
 
-                      NuGetPush(GetPackagePath(EnvironmentVariable("CUSTOM_VERSION_VALUE")).Replace("nupkg", "snupkg"), new NuGetPushSettings {
-                        ApiKey = NugetApiKey,
-                        Source = NUGET_SOURCE
-                      });
-                    });
-
-Task("create-github-release").Does(() => {
+Task("create-release").Does(() => {
   Information("Creating new GitHub release...");
 
-  var version = EnvironmentVariable("CUSTOM_VERSION_VALUE");
-  var releaseName = $"Case.NET v{version}";
+  if(!IsReleaseTag) {
+    throw new InvalidOperationException("Cannot run create-release task on non-release build");
+  }
 
-  Information($"Release name: {releaseName}");
+  if(IsMainRelease) {
+    string v = EnvironmentVariable("CUSTOM_VERSION_MAIN");
+    Information("Creating release of Case.NET - v{0}", v);
 
-  GitReleaseManagerCreate(GitHubPat, "2chevskii", "Case.NET", new GitReleaseManagerCreateSettings {
-    Prerelease = version.Contains("-"),
-    Name = releaseName,
-    TargetCommitish = AppVeyor.Environment.Repository.Commit.Id,
-    Assets = ConfigurationBin + "/" + "*.{zip,nupkg,snupkg}"
-  });
+    GitReleaseManagerCreate(GitHubPat, "2chevskii", "Case.NET", new GitReleaseManagerCreateSettings {
+      Prerelease = v.Contains("-"),
+      Name = "Case.NET v" + v,
+      TargetCommitish = AppVeyor.Environment.Repository.Tag.Name,
+      Assets = Path.Combine(MainProjBin, "*.{zip,nupkg,snupkg}")
+    });
+  } else {
+    string v = EnvironmentVariable("CUSTOM_VERSION_EXT");
+    Information("Creating release of Case.NET.Extensions - v{0}", v);
+
+    GitReleaseManagerCreate(GitHubPat, "2chevskii", "Case.NET", new GitReleaseManagerCreateSettings {
+      Prerelease = v.Contains("-"),
+      Name = "Case.NET.Extensions v " + v,
+      TargetCommitish = AppVeyor.Environment.Repository.Tag.Name,
+      Assets = Path.Combine(ExtProjBin, "*.{zip,nupkg,snupkg}")
+    });
+  }
+});
+
+Task("resolve-version").Does(() => {
+  Information("Setting custom build version...");
+
+  Environment.SetEnvironmentVariable("CUSTOM_VERSION", "true");
+
+  if(IsReleaseTag) {
+    string cv = GetCustomVersion(ReleaseVersion);
+    string ev;
+
+    Information("Using release version: {0}", cv);
+
+    if(IsMainRelease) {
+      ev = "CUSTOM_VERSION_MAIN";
+    } else {
+      ev = "CUSTOM_VERSION_EXT";
+    }
+
+    Environment.SetEnvironmentVariable(ev, cv);
+  } else {
+    var mainProjVersion = ReadProjectVersion(MainProjPath);
+    var extProjVersion = ReadProjectVersion(ExtProjPath);
+
+    string mcv = GetCustomVersion(mainProjVersion);
+    string ecv = GetCustomVersion(extProjVersion);
+
+    Information("Using project versions: {0} | {1}", mcv, ecv);
+
+    Environment.SetEnvironmentVariable("CUSTOM_VERSION_MAIN", mcv);
+    Environment.SetEnvironmentVariable("CUSTOM_VERSION_EXT", ecv);
+  }
+});
+
+Task("regular-pipeline").Does(() => {
+  System.Threading.Tasks.Task.WaitAll(RunTargetAsync("archive-main"), RunTargetAsync("archive-ext"));
+  System.Threading.Tasks.Task.WaitAll(RunTargetAsync("pack-main"), RunTargetAsync("pack-ext"));
+
+
+  // RunTarget("archive-main");
+  // RunTarget("archive-ext");
+
+  // RunTarget("pack-main");
+  // RunTarget("pack-ext");
+
+  RunTarget("upload-artifacts");
+});
+
+Task("release-pipeline-main").Does(() => {
+
+});
+
+Task("release-pipeline-ext").Does(() => {
+
 });
 
 Task("release-build").IsDependentOn("build")
@@ -254,6 +319,8 @@ Task("regular-build").IsDependentOn("build")
                        Information("Regular build completed");
                      });
 
+RunTarget("regular-pipeline");
+
 // if(EnvironmentVariable("CI")?.ToLower() != "true") {
 //   throw new CakeException("Build failed: non-CI environments are not supported, use standard dotnet tools instead");
 // }
@@ -265,45 +332,3 @@ Task("regular-build").IsDependentOn("build")
 //   Information("Running regular build...");
 //   RunTarget("regular-build");
 // }
-
-readonly struct ProjectPath {
-  public readonly string Root;
-  public readonly string Bin;
-  public readonly string Release;
-  public readonly string NetStandard20;
-  public readonly string NetStandard21;
-  public readonly string NetStandard20Zip;
-  public readonly string NetStandard21Zip;
-  public readonly Func<string, string> Package;
-  public readonly Func<string, string> SymbolsPackage;
-  public readonly string MainProj;
-  public readonly string TestProj;
-  public readonly string VersionProps;
-
-  public ProjectPath(string cwd, string root, string packageName) {
-    Root = Path.GetFullPath(root);
-    Bin = Path.Combine(Root, "bin/");
-    Release = Path.Combine(Bin, CONFIGURATION);
-    NetStandard20 = Path.Combine(Release, "netstandard2.0");
-    NetStandard21 = Path.Combine(Release, "netstandard2.1");
-    NetStandard20Zip = NetStandard20 + ".zip";
-    NetStandard21Zip = NetStandard21 + ".zip";
-
-    string releaseLocal = Release;
-    Package = version => Path.Combine(releaseLocal, $"{packageName}.{version}.nupkg");
-    SymbolsPackage = version => Path.Combine(releaseLocal,  $"{packageName}.{version}.snupkg");
-
-    string fnwe = Path.GetFileNameWithoutExtension(root);
-
-    MainProj = Path.Combine(Root, $"{fnwe}.csproj");
-    TestProj = Path.GetFullPath(Path.Combine(cwd, $"{fnwe}.Test/{fnwe}.Test.csproj"));
-    VersionProps = Path.Combine(Root, "Version.props");
-  }
-}
-
-[Flags]
-enum ReleaseType {
-  NONE = 0,
-  MAIN = 2,
-  EXTENSIONS = 4
-}
