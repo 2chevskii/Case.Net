@@ -33,14 +33,14 @@ readonly bool IsReleaseTag = EnvironmentVariable("APPVEYOR_REPO_TAG")?.ToLower()
 readonly bool IsMainRelease = IsReleaseTag && TagName.Split('/').Skip(1).FirstOrDefault() == "main";
 readonly bool IsExtRelease = IsReleaseTag && TagName.Split('/').Skip(1).FirstOrDefault() == "ext";
 readonly string ReleaseVersion = TagName.Split('/').Skip(2).FirstOrDefault() ?? string.Empty;
-readonly string MainProjDir = Path.GetFullPath("./Case.NET/");
-readonly string ExtProjDir = Path.GetFullPath("./Case.NET.Extensions/");
-readonly string MainProjPath = Path.Combine(MainProjDir, "Case.NET.csproj");
-readonly string ExtProjPath = Path.Combine(ExtProjDir, "Case.NET.Extensions.csproj");
-readonly string MainProjTest = Path.GetFullPath("./Case.NET.Test", "Case.NET.Test.csproj");
-readonly string ExtProjTest = Path.Combine("./Case.NET.Extensions.Test", "Case.NET.Extensions.Test.csproj");
-readonly string MainProjBin = Path.Combine(MainProjDir, "bin", CONFIGURATION);
-readonly string ExtProjBin = Path.Combine(ExtProjBin, "bin", CONFIGURATION);
+readonly string MainProjDir = Path.GetFullPath("./Case.NET");
+readonly string ExtProjDir = Path.GetFullPath("./Case.NET.Extensions");
+readonly string MainProjPath = Path.Combine(Cwd, "Case.NET", "Case.NET.csproj");
+readonly string ExtProjPath = Path.Combine(Cwd, "Case.NET.Extensions", "Case.NET.Extensions.csproj");
+readonly string MainProjTest = Path.Combine(Path.GetFullPath("./Case.NET.Test"), "Case.NET.Test.csproj");
+readonly string ExtProjTest = Path.Combine(Path.GetFullPath("./Case.NET.Extensions.Test"), "Case.NET.Extensions.Test.csproj");
+readonly string MainProjBin = Path.Combine(Cwd, "Case.NET", "bin", CONFIGURATION);
+readonly string ExtProjBin = Path.Combine(Cwd, "Case.NET.Extensions", "bin", CONFIGURATION);
 readonly Func<string, string, string> BuildOutputDir = (bin, target) =>
   Path.Combine(bin, target);
 readonly Func<string, string, string, string> ArchiveOutputPath = (bin, name, target) =>
@@ -126,7 +126,7 @@ Task("build-ext-test").IsDependentOn("build-ext").Does(() => {
   });
 });
 
-Task("test-ext").IsDependentOn("build-ext").Does(() => {
+Task("test-ext").IsDependentOn("build-ext-test").Does(() => {
   Information("Running unit tests on Case.NET.Extensions v{0}", EnvironmentVariable("CUSTOM_VERSION_EXT"));
 
   DotNetTest(ExtProjTest, new DotNetTestSettings {
@@ -277,19 +277,14 @@ Task("resolve-version").Does(() => {
   }
 });
 
-Task("regular-pipeline").Does(() => {
-  System.Threading.Tasks.Task.WaitAll(RunTargetAsync("archive-main"), RunTargetAsync("archive-ext"));
-  System.Threading.Tasks.Task.WaitAll(RunTargetAsync("pack-main"), RunTargetAsync("pack-ext"));
-
-
-  // RunTarget("archive-main");
-  // RunTarget("archive-ext");
-
-  // RunTarget("pack-main");
-  // RunTarget("pack-ext");
-
-  RunTarget("upload-artifacts");
-});
+Task("regular-pipeline").IsDependentOn("archive-main")
+                        .IsDependentOn("archive-ext")
+                        .IsDependentOn("pack-main")
+                        .IsDependentOn("pack-ext")
+                        .IsDependentOn("upload-artifacts")
+                        .Does(() => {
+                          AppVeyor.AddInformationalMessage("Regular build pipeline finished");
+                        });
 
 Task("release-pipeline-main").Does(() => {
 
@@ -299,36 +294,28 @@ Task("release-pipeline-ext").Does(() => {
 
 });
 
-Task("release-build").IsDependentOn("build")
-                     .IsDependentOn("test")
-                     .IsDependentOn("pack")
-                     .IsDependentOn("archive")
-                     .IsDependentOn("upload-artifacts")
-                     .IsDependentOn("push-package")
-                     .IsDependentOn("create-github-release")
-                     .Does(() => {
-                       Information("Release build completed");
-                     });
+// RunTarget("regular-pipeline");
 
-Task("regular-build").IsDependentOn("build")
-                     .IsDependentOn("test")
-                     .IsDependentOn("pack")
-                     .IsDependentOn("archive")
-                     .IsDependentOn("upload-artifacts")
-                     .Does(() => {
-                       Information("Regular build completed");
-                     });
+if(EnvironmentVariable("CI")?.ToLower() != "true") {
+  throw new CakeException(1, "Build failed: non-CI environments are not supported, use standard dotnet tools instead");
+}
 
-RunTarget("regular-pipeline");
+if(IsReleaseTag) {
+  throw new NotImplementedException();
+} else {
+  var report = RunTarget("regular-pipeline");
 
-// if(EnvironmentVariable("CI")?.ToLower() != "true") {
-//   throw new CakeException("Build failed: non-CI environments are not supported, use standard dotnet tools instead");
-// }
+  bool flag = false;
 
-// if(IsTag) {
-//   Information("Tag build detected, running release build...");
-//   RunTarget("release-build");
-// } else {
-//   Information("Running regular build...");
-//   RunTarget("regular-build");
-// }
+  foreach(var result in report) {
+    if(result.ExecutionStatus == CakeTaskExecutionStatus.Failed) {
+      flag = true;
+
+      AppVeyor.AddErrorMessage("Failed task {0}", result.TaskName);
+    }
+  }
+
+  if(flag) {
+    throw new CakeException(1);
+  }
+}
