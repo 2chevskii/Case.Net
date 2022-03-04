@@ -64,7 +64,9 @@ string ReadProjectVersion(string projectPath) => XmlPeek(
 );
 
 string GetCustomVersion(string ver) {
-  var regex = new Regex(@"(\d+)(?:\.(\d+))(?:\.(\d+))(?:-([-\.a-z0-9]+))", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+  // Information("GetCustomVersion: {0}", ver);
+
+  var regex = new Regex(@"(\d+)(?:\.(\d+))?(?:\.(\d+))?(?:-([-\.a-z0-9]+))?", RegexOptions.Compiled | RegexOptions.IgnoreCase);
   var bn = BuildNumber.ToString();
 
   var match = regex.Match(ver);
@@ -73,6 +75,8 @@ string GetCustomVersion(string ver) {
   var minor = match.Groups[2].Value ?? "0";
   var patch = match.Groups[3].Value ?? "0";
   var suffix = match.Groups[4].Value ?? string.Empty;
+
+  // Information("Major: {0}\nMinor: {1}\nPatch: {2}\nSuffix: {3}\nBuildNumber: {4}", major, minor, patch, suffix, bn);
 
   return $"{major}.{minor}.{bn}" + (suffix.Length == 0 ? string.Empty : ("-" + suffix));
 }
@@ -316,9 +320,9 @@ Task("release-pipeline-ext").IsDependentOn("archive-ext")
                               );
                             });
 
-if(EnvironmentVariable("CI")?.ToLower() != "true") {
-  throw new CakeException(1, "Build failed: non-CI environments are not supported, use standard dotnet tools instead");
-}
+// if(EnvironmentVariable("CI")?.ToLower() != "true") {
+//   throw new CakeException(1, "Build failed: non-CI environments are not supported, use standard dotnet tools instead");
+// }
 
 CakeReport report;
 
