@@ -56,6 +56,7 @@ List<string> ArtifactsList => new() {
     ArchiveOutputPath(MainProjBin, "Case.NET", NS_20),
     ArchiveOutputPath(MainProjBin, "Case.NET", NS_21),
     ArchiveOutputPath(ExtProjBin, "Case.NET.Extensions", NS_20),
+    ArchiveOutputPath(ExtProjBin, "Case.NET.Extensions", NS_21),
     PackageOutputPath(MainProjBin, "CaseDotNet", EnvironmentVariable("CUSTOM_VERSION_MAIN")),
     PackageOutputPath(ExtProjBin, "CaseDotNet.Extensions", EnvironmentVariable("CUSTOM_VERSION_EXT"))
 };
@@ -160,6 +161,7 @@ Task("archive-ext").IsDependentOn("build-ext").IsDependentOn("test-ext").Does(()
   Information("Compressing build results of Case.NET.Extensions...");
 
   Zip(BuildOutputDir(ExtProjBin, NS_20), ArchiveOutputPath(ExtProjBin, "Case.NET.Extensions", NS_20));
+  Zip(BuildOutputDir(ExtProjBin, NS_21), ArchiveOutputPath(ExtProjBin, "Case.NET.Extensions", NS_21));
 });
 
 Task("pack-main").IsDependentOn("build-main").IsDependentOn("test-main").Does(() => {
