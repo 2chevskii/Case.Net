@@ -60,6 +60,22 @@ namespace Case.NET
             StateLessWordEmitter.FirstUpper,
             SingleCharWordConcatenator.Dash
         );
+        /// <summary>
+        /// Default <see cref="CaseConverter"/> implementation to convert values to <c>dot.case</c>
+        /// </summary>
+        public static readonly CaseConverter DotCase = new CaseConverter(
+            Parsing.Parser.Universal,
+            StateLessWordEmitter.AllLower,
+            SingleCharWordConcatenator.Dot
+        );
+        /// <summary>
+        /// Default <see cref="CaseConverter"/> implementation to convert values to <c>Namespace.Case</c>
+        /// </summary>
+        public static readonly CaseConverter NamespaceCase = new CaseConverter(
+            Parsing.Parser.Universal,
+            StateLessWordEmitter.FirstUpper,
+            SingleCharWordConcatenator.Dot
+        );
 
         public IParser Parser { get; }
         public IWordEmitter WordEmitter { get; }
