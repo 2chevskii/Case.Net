@@ -94,3 +94,5 @@ static void Main(string[] args) {
 ### Misc
 
 - Improve unit test coverage
+- Better build/release flow on CI
+- Docs
