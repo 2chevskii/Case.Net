@@ -19,6 +19,7 @@ build_script:
   - pwsh: dotnet cake ./build.cake
   # - pwsh: dotnet cake ./Case.NET.Extensions/build.cake --configuration Release
 test: false # build script will run all the tests automatically
+deploy: false
 # for:
 #   - only_commits:
 #       files:

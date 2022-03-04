@@ -286,36 +286,60 @@ Task("regular-pipeline").IsDependentOn("archive-main")
                           AppVeyor.AddInformationalMessage("Regular build pipeline finished");
                         });
 
-Task("release-pipeline-main").Does(() => {
+Task("release-pipeline-main").IsDependentOn("archive-main")
+                             .IsDependentOn("archive-ext")
+                             .IsDependentOn("pack-main")
+                             .IsDependentOn("pack-ext")
+                             .IsDependentOn("push-package-main")
+                             .IsDependentOn("create-release")
+                             .IsDependentOn("upload-artifacts")
+                             .Does(() => {
+                              AppVeyor.AddInformationalMessage(
+                                "Case.NET v{0} release pipeline finished",
+                                EnvironmentVariable("CUSTOM_VERSION_MAIN")
+                              );
+                             });
 
-});
-
-Task("release-pipeline-ext").Does(() => {
-
-});
-
-// RunTarget("regular-pipeline");
+Task("release-pipeline-ext").IsDependentOn("archive-main")
+                            .IsDependentOn("archive-ext")
+                            .IsDependentOn("pack-main")
+                            .IsDependentOn("pack-ext")
+                            .IsDependentOn("push-package-ext")
+                            .IsDependentOn("create-release")
+                            .IsDependentOn("upload-artifacts")
+                            .Does(() => {
+                              AppVeyor.AddInformationalMessage(
+                                "Case.NET.Extensions v{0} release pipeline finised",
+                                EnvironmentVariable("CUSTOM_VERSION_EXT")
+                              );
+                            });
 
 if(EnvironmentVariable("CI")?.ToLower() != "true") {
   throw new CakeException(1, "Build failed: non-CI environments are not supported, use standard dotnet tools instead");
 }
 
+CakeReport report;
+
 if(IsReleaseTag) {
-  throw new NotImplementedException();
+  if(IsMainRelease) {
+    report = RunTarget("release-pipeline-main");
+  } else {
+    report = RunTarget("release-pipeline-ext");
+  }
 } else {
-  var report = RunTarget("regular-pipeline");
+  report = RunTarget("regular-pipeline");
+}
 
-  bool flag = false;
+bool flag = false;
 
-  foreach(var result in report) {
-    if(result.ExecutionStatus == CakeTaskExecutionStatus.Failed) {
-      flag = true;
+foreach(var result in report) {
+  if(result.ExecutionStatus == CakeTaskExecutionStatus.Failed) {
+    flag = true;
 
-      AppVeyor.AddErrorMessage("Failed task {0}", result.TaskName);
-    }
+    AppVeyor.AddErrorMessage("Failed task {0}", result.TaskName);
   }
+}
 
-  if(flag) {
-    throw new CakeException(1);
-  }
+if(flag) {
+  throw new CakeException(1);
 }
