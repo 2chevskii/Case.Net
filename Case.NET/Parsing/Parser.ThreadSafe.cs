@@ -13,7 +13,7 @@ namespace Case.NET.Parsing
     /// <summary>
     /// Basic parser implementation. Only produces <see cref="WordToken"/> at the moment
     /// <para>
-    /// Thread safe. Uses stackalloc'ed arrays
+    /// Thread safe. Uses <see langword="stackalloc"/>'ed arrays
     /// inside <see cref="Parse"/> method instead of member fields
     /// </para>
     /// </summary> 
