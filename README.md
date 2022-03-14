@@ -79,7 +79,6 @@ static void Main(string[] args) {
 
 ### Target conventions to support
 
-- [ ] `Capital Case`
 - [ ] `dot.case`
 - [ ] `Namespace.Case`
 - [ ] `no case`
