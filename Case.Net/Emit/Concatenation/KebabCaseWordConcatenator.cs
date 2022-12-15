@@ -4,13 +4,10 @@ namespace Case.Net.Emit.Concatenation;
 
 public class KebabCaseWordConcatenator : IWordConcatenator
 {
-    private static char DASH = '-';
+    private const string DASH = "-";
 
-    public unsafe ReadOnlySpan<char> GetConcatenation(CasedString source, int index)
+    public string GetConcatenation(string current, string next)
     {
-        fixed (char* pDash = &DASH)
-        {
-            return new ReadOnlySpan<char>( pDash, 1 );
-        }
+        return DASH;
     }
 }

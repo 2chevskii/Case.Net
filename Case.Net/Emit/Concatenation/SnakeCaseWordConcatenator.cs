@@ -4,13 +4,10 @@ namespace Case.Net.Emit.Concatenation;
 
 public class SnakeCaseWordConcatenator : IWordConcatenator
 {
-    private static char UNDERSCORE = '_';
+    private const string  UNDERSCORE = "_";
 
-    public unsafe ReadOnlySpan<char> GetConcatenation(CasedString source, int index)
+    public string GetConcatenation(ReadOnlySpan<char> current, ReadOnlySpan<char> next)
     {
-        fixed (char* pUnderscore = &UNDERSCORE)
-        {
-            return new ReadOnlySpan<char>( pUnderscore, 1 );
-        }
+        return UNDERSCORE;
     }
 }

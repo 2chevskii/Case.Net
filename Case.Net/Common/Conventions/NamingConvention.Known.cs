@@ -1,4 +1,9 @@
-﻿namespace Case.Net.Common.Conventions;
+﻿using Case.Net.Emit.Concatenation;
+using Case.Net.Emit.Prefixes;
+using Case.Net.Emit.Suffixes;
+using Case.Net.Emit.Words;
+
+namespace Case.Net.Common.Conventions;
 
 public abstract partial class NamingConvention
 {

@@ -5,7 +5,7 @@ namespace Case.Net.Emit.Words;
 
 public class CamelCaseWordEmitter : IWordEmitter
 {
-    public ReadOnlySpan<char> EmitWord(CasedString source, int wordIndex)
+    public string EmitWord(CasedString source, int wordIndex)
     {
         Word       word  = source.WordAt( wordIndex );
         Span<char> value = new Span<char>( null, 0, word.Value.Length );
@@ -26,6 +26,6 @@ public class CamelCaseWordEmitter : IWordEmitter
             }
         }
 
-        return value;
+        return new string( value );
     }
 }

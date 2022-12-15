@@ -1,8 +1,6 @@
-﻿using Case.Net.Common;
-
-namespace Case.Net.Emit.Concatenation;
+﻿namespace Case.Net.Emit.Concatenation;
 
 public interface IWordConcatenator
 {
-    ReadOnlySpan<char> GetConcatenation(CasedString source, int index);
+    string GetConcatenation(string current, string next);
 }

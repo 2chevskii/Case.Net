@@ -4,5 +4,5 @@ namespace Case.Net.Emit.Suffixes;
 
 public interface ISuffixEmitter
 {
-    ReadOnlySpan<char> GetSuffix(CasedString source);
+    ReadOnlySpan<char> GetSuffix(ReadOnlySpan<char> value);
 }
