@@ -1,11 +1,8 @@
 ﻿namespace Case.Net.Common.Conventions;
 
-public class MixedNamingConvention : NamingConvention
+public class MixedNamingConvention : INamingConvention
 {
-    public override string Name => "Mixed";
+    public string Name => "Mixed";
 
-    public override CasedString Convert(CasedString source)
-    {
-        return source;
-    }
+    public CasedString Convert(CasedString source) => source;
 }

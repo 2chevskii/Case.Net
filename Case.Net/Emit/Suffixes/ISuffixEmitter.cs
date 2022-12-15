@@ -1,6 +1,4 @@
-﻿using Case.Net.Common;
-
-namespace Case.Net.Emit.Suffixes;
+﻿namespace Case.Net.Emit.Suffixes;
 
 public interface ISuffixEmitter
 {
