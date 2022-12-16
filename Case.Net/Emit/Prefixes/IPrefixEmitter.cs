@@ -1,6 +1,4 @@
-﻿using Case.Net.Common;
-
-namespace Case.Net.Emit.Prefixes;
+﻿namespace Case.Net.Emit.Prefixes;
 
 public interface IPrefixEmitter
 {

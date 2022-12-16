@@ -34,7 +34,7 @@ public class GenericNamingConvention : INamingConvention
         SuffixEmitter = suffixEmitter;
     }
 
-    public unsafe CasedString Convert(CasedString source)
+    /*public unsafe CasedString Convert(CasedString source)
     {
         Span<char> value;
 
@@ -101,6 +101,59 @@ public class GenericNamingConvention : INamingConvention
         var casedString = new CasedString( new string( stringValue ), source.Words, this  );
 
         return casedString;
+    }*/
+
+    public CasedString Convert(CasedString source)
+    {
+        var words                      = EmitWords( source );
+        var concatenators              = EmitConcatenators( words );
+        var concatenatedValueCharCount = words.CharCount() + concatenators.CharCount();
+
+        ReadOnlySpan<char> concatenatedValue = stackalloc char[concatenatedValueCharCount];
+        var                prefix            = EmitPrefix( concatenatedValue );
+        var                suffix            = EmitSuffix( concatenatedValue );
+
+
+
+        var fullValue = prefix.Add( concatenatedValue, suffix );
+
+    }
+
+    ReadOnlySpan<char> EmitPrefix(ReadOnlySpan<char> value) { }
+
+    ReadOnlySpan<char> EmitSuffix(ReadOnlySpan<char> value) { }
+
+    List<Word> EmitWords(CasedString source)
+    {
+        List<Word> words = new ();
+
+        if ( WordEmitter is not null )
+        {
+            for ( int i = 0; i < source.WordCount(); i++ )
+            {
+                words.Add( WordEmitter.EmitWord( source, i ) );
+            }
+        }
+
+        return words;
+    }
+
+    List<string> EmitConcatenators(List<Word> words)
+    {
+        var concatenators = new List<string>();
+
+        if ( WordConcatenator is not null )
+        {
+            for ( int i = 0; i < words.Count - 1; i++ )
+            {
+                concatenators.Add(
+                    WordConcatenator.GetConcatenation( words[i].Value, words[i + 1].Value )
+                );
+            }
+
+        }
+
+        return concatenators;
     }
 
     ReadOnlySpan<char> GetPrefix(ReadOnlySpan<char> value)
@@ -122,11 +175,4 @@ public class GenericNamingConvention : INamingConvention
 
         return ReadOnlySpan<char>.Empty;
     }
-}
-
-public class MixedNamingConvention : INamingConvention
-{
-    public string Name => "Mixed";
-
-    public CasedString Convert(CasedString source) { return source; }
 }
