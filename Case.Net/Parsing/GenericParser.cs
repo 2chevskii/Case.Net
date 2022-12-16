@@ -1,54 +1,185 @@
 ﻿using Case.Net.Common;
+using Case.Net.Common.Conventions;
+using Case.Net.Extensions;
 using Case.Net.Parsing.CharFilters;
+using Case.Net.Parsing.Prefixes;
 using Case.Net.Parsing.Splitters;
+using Case.Net.Parsing.Suffixes;
 
 namespace Case.Net.Parsing;
 
 public class GenericParser : IParser
 {
-    private readonly ICharFilter[] _charFilters;
-    private readonly ISplitter[]   _splitters;
+    private readonly IPrefixParser[] _prefixParsers;
+    private readonly ISuffixParser[] _suffixParsers;
+    private readonly ISplitter[]     _splitters;
 
-    public IReadOnlyCollection<ICharFilter> CharFilters => _charFilters;
+    public IReadOnlyCollection<IPrefixParser> PrefixParsers => _prefixParsers;
+    public IReadOnlyCollection<ISuffixParser> SuffixParsers => _suffixParsers;
     public IReadOnlyCollection<ISplitter> Splitters => _splitters;
 
-    public GenericParser(IEnumerable<ICharFilter> charFilters, IEnumerable<ISplitter> splitters)
+    public GenericParser(
+        IEnumerable<ISplitter> splitters,
+        IEnumerable<IPrefixParser> prefixParsers,
+        IEnumerable<ISuffixParser> suffixParsers
+    )
     {
-        _charFilters = charFilters.ToArray();
-        _splitters   = splitters.ToArray();
+        _splitters = splitters.ToArray();
+        _prefixParsers = prefixParsers.ToArray();
+        _suffixParsers = suffixParsers.ToArray();
     }
 
-    private static void ClearSplitPositions(Span<(int, int)> splitPositions) =>
-    splitPositions.Fill( (-1, -1) );
+    private static void ClearSplitResults(Span<SplitResult> splitResults) =>
+    splitResults.Fill( SplitResult.CreateEmpty() );
 
-    public IReadOnlyCollection<Word> Parse(ReadOnlySpan<char> input)
+    public CasedString Parse(ReadOnlySpan<char> input)
     {
         if ( input.Length is 0 )
-            return Array.Empty<Word>();
+        {
+            return CasedString.Empty;
+        }
 
-        int              position       = 0;
-        Span<(int, int)> splitPositions = stackalloc (int, int)[_splitters.Length];
-        List<Word>       words          = new ();
+        (int prefixSize, IPrefixParser? prefixParser) = FindBiggestPrefix( input );
+        var prefixSlice = input.Slice( 0, prefixSize );
+        input = input.Slice( prefixSize );
+        (int suffixSize, ISuffixParser? suffixParser) = FindBiggestSuffix( input );
+        var suffixSlice = input[^suffixSize..];
+        input = input[..^suffixSize];
+
+        int               position     = 0;
+        Span<SplitResult> splitResults = stackalloc SplitResult[_splitters.Length];
+
+        List<Word>      words      = new ();
+        List<Delimiter> delimiters = new ();
 
         while ( position < input.Length )
         {
-            ReadOnlySpan<char> slice = input[position..];
+            ClearSplitResults( splitResults );
 
-            SkipFiltered( slice, ref position );
+            for ( var i = 0; i < _splitters.Length; i++ )
+            {
+                var splitter    = _splitters[i];
+                var splitResult = splitter.Split( input.Slice( position ) );
+                splitResults[i] = splitResult;
+            }
 
-            ReadOnlySpan<char> slice2 = input[position..];
+            if ( splitResults.All( x => x.IsEmpty ) )
+            {
+                /*turn the whole remaining slice into word*/
+                var word = new Word(
+                    new Position( position, position + input.Length - 1 ),
+                    input.ToString(),
+                    null
+                );
 
-            ClearSplitPositions( splitPositions );
+                words.Add( word );
+                position = input.Length;
+            }
+            else
+            {
+                var minSr = splitResults.MinBy( x => x.TotalLength, out int srIndex );
 
-            ExecuteSplitters( slice2, splitPositions );
+                Position wordPos = new Position( position, position + minSr.WordLength - 1 );
 
-            PushWord( words, slice2, splitPositions, ref position );
+                var word = new Word(
+                    wordPos,
+                    input.Slice( position, wordPos.Length ).ToString(),
+                    _splitters[srIndex]
+                );
+
+                words.Add( word );
+
+                if ( minSr.DelimiterLength is not 0 )
+                {
+                    int delimiterPosition = position + minSr.WordLength;
+                    ReadOnlySpan<char> delimiterValueSlice = input.Slice(
+                        delimiterPosition,
+                        minSr.DelimiterLength
+                    );
+
+                    delimiters.Add(
+                        new Delimiter( delimiterPosition, delimiterValueSlice.ToString() )
+                    );
+                }
+
+                position += minSr.TotalLength;
+            }
         }
 
-        return words;
+        Prefix prefix;
+
+        if ( prefixSize is 0 )
+        {
+            prefix = Prefix.Empty;
+        }
+        else
+        {
+            prefix = new Prefix( prefixParser!, prefixSlice.ToString() );
+        }
+
+        Suffix suffix;
+
+        if ( suffixSize is 0 )
+        {
+            suffix = Suffix.Empty;
+        }
+        else
+        {
+            suffix = new Suffix( suffixParser!, suffixSlice.ToString() );
+        }
+
+        CasedString casedString = new CasedString(
+            string.Empty,
+            string.Empty,
+            delimiters.Select( x => x.Value ).ToArray(),
+            words.Select( x => x.Value ).ToArray(),
+            NamingConventions.Detect( prefix, suffix, words, delimiters )
+        );
+
+        return casedString;
     }
 
-    private void PushWord(
+    (int, IPrefixParser?) FindBiggestPrefix(ReadOnlySpan<char> input)
+    {
+        int            maxLength = 0;
+        IPrefixParser? mParser   = null;
+
+        for ( var i = 0; i < _prefixParsers.Length; i++ )
+        {
+            var parser = _prefixParsers[i];
+            var length = parser.GetPrefixSize( input );
+
+            if ( length > maxLength )
+            {
+                maxLength = length;
+                mParser = parser;
+            }
+        }
+
+        return (maxLength, mParser);
+    }
+
+    (int, ISuffixParser?) FindBiggestSuffix(ReadOnlySpan<char> input)
+    {
+        int            maxLength = 0;
+        ISuffixParser? mParser   = null;
+
+        for ( int i = 0; i < _suffixParsers.Length; i++ )
+        {
+            var parser = _suffixParsers[i];
+            var length = parser.GetSuffixSize( input );
+
+            if ( length > maxLength )
+            {
+                maxLength = length;
+                mParser = parser;
+            }
+        }
+
+        return (maxLength, mParser);
+    }
+
+    /*private void PushWord(
         ICollection<Word> words,
         ReadOnlySpan<char> slice,
         Span<(int, int)> splitPositions,
@@ -77,8 +208,8 @@ public class GenericParser : IParser
         {
             wordEndAbs = position + slice.Length - 1;
             nextPosAbs = position + slice.Length;
-            splitter   = null;
-            value      = new string( slice );
+            splitter = null;
+            value = new string( slice );
         }
         else
         {
@@ -87,8 +218,8 @@ public class GenericParser : IParser
 
             wordEndAbs = position + minWordEnd;
             nextPosAbs = position + minNextPos;
-            splitter   = splitter2;
-            value      = new string( slice[..(minWordEnd + 1)] );
+            splitter = splitter2;
+            value = new string( slice[..(minWordEnd + 1)] );
         }
 
         var wordPosition = new Position( wordStart, wordEndAbs );
@@ -134,6 +265,6 @@ public class GenericParser : IParser
             if ( !skipped )
                 break;
         }
-    }
+    }*/
 
 }

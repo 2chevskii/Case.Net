@@ -1,10 +1,16 @@
-﻿using Case.Net;
-using Case.Net.Parsing;
-using Case.Net.Parsing.CharFilters;
-using Case.Net.Parsing.Splitters;
+﻿using Case.Net.Common;
+using Case.Net.Common.Conventions;
 
-var parser = new GenericParser( new ICharFilter[0], new[]{new CamelCaseSplitter()} );
+var convention = new CamelCaseNamingConvention();
 
-var words = parser.Parse("camelCase".AsSpan());
+var input = new CasedString(
+    string.Empty,
+    string.Empty,
+    Array.Empty<string>(),
+    new [] {"hello", "world"},
+    new MixedNamingConvention()
+);
 
-Console.WriteLine(words);
+CasedString output = convention.Convert(input);
+
+Console.WriteLine(output);

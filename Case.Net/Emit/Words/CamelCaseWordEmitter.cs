@@ -5,9 +5,9 @@ namespace Case.Net.Emit.Words;
 
 public class CamelCaseWordEmitter : IWordEmitter
 {
-    public string EmitWord(CasedString source, int wordIndex)
+    public Word EmitWord(CasedString source, int wordIndex)
     {
-        Word       word  = source.WordAt( wordIndex );
+        /*Word       word  = source.WordAt( wordIndex );
         Span<char> value = new Span<char>( null, 0, word.Value.Length );
 
         if ( source.IsFirst( word ) )
@@ -26,6 +26,8 @@ public class CamelCaseWordEmitter : IWordEmitter
             }
         }
 
-        return new string( value );
+        return new string( value );*/
+
+        throw new NotImplementedException();
     }
 }

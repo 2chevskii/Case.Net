@@ -105,7 +105,7 @@ public class GenericNamingConvention : INamingConvention
 
     public CasedString Convert(CasedString source)
     {
-        var words                      = EmitWords( source );
+        /*var words                      = EmitWords( source );
         var concatenators              = EmitConcatenators( words );
         var concatenatedValueCharCount = words.CharCount() + concatenators.CharCount();
 
@@ -115,11 +115,12 @@ public class GenericNamingConvention : INamingConvention
 
 
 
-        var fullValue = prefix.Add( concatenatedValue, suffix );
+        var fullValue = prefix.Add( concatenatedValue, suffix );*/
 
+        throw new NotImplementedException();
     }
 
-    ReadOnlySpan<char> EmitPrefix(ReadOnlySpan<char> value) { }
+    /*ReadOnlySpan<char> EmitPrefix(ReadOnlySpan<char> value) { }
 
     ReadOnlySpan<char> EmitSuffix(ReadOnlySpan<char> value) { }
 
@@ -174,5 +175,5 @@ public class GenericNamingConvention : INamingConvention
         }
 
         return ReadOnlySpan<char>.Empty;
-    }
+    }*/
 }

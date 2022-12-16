@@ -1,13 +1,15 @@
 ﻿using Case.Net.Common;
-using Case.Net.Parsing.CharFilters;
+using Case.Net.Parsing.Prefixes;
 using Case.Net.Parsing.Splitters;
+using Case.Net.Parsing.Suffixes;
 
 namespace Case.Net.Parsing;
 
 public interface IParser
 {
-    IReadOnlyCollection<ICharFilter> CharFilters { get; }
+    IReadOnlyCollection<IPrefixParser> PrefixParsers { get; }
+    IReadOnlyCollection<ISuffixParser> SuffixParsers { get; }
     IReadOnlyCollection<ISplitter> Splitters { get; }
 
-    IReadOnlyCollection<Word> Parse(ReadOnlySpan<char> input);
+    CasedString Parse(ReadOnlySpan<char> input);
 }

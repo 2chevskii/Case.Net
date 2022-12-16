@@ -2,27 +2,26 @@
 
 public class CamelCaseSplitter : ISplitter
 {
-    public bool TryFindSplitIndex(ReadOnlySpan<char> input, ref int wordEnd, ref int nextPosition)
+    public SplitResult Split(ReadOnlySpan<char> input)
     {
         for ( int i = 0; i < input.Length - 1; i++ )
         {
             char current = input[i];
+            char next    = input[i + 1];
 
             if ( !char.IsLower( current ) )
+            {
                 continue;
-
-            int j = i + 1;
-
-            char next = input[j];
+            }
 
             if ( !char.IsUpper( next ) )
+            {
                 continue;
+            }
 
-            wordEnd      = i;
-            nextPosition = j;
-            return true;
+            return new SplitResult( i + 1 );
         }
 
-        return false;
+        return SplitResult.CreateEmpty();
     }
 }

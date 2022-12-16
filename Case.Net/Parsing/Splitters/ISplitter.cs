@@ -2,5 +2,5 @@
 
 public interface ISplitter
 {
-    bool TryFindSplitIndex(ReadOnlySpan<char> input, ref int wordEnd, ref int nextPosition);
+    SplitResult Split(ReadOnlySpan<char> input);
 }

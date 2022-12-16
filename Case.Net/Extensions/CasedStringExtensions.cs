@@ -4,7 +4,7 @@ namespace Case.Net.Extensions;
 
 public static class CasedStringExtensions
 {
-    public static int WordCount(this CasedString self)
+    /*public static int WordCount(this CasedString self)
     {
         return self.Words.Count;
     }
@@ -40,5 +40,5 @@ public static class CasedStringExtensions
         }
 
         return -1;
-    }
+    }*/
 }
