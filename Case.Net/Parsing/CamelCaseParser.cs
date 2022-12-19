@@ -1,34 +1,53 @@
-﻿namespace Case.Net.Parsing;
+﻿using Case.Net.Extensions;
+
+namespace Case.Net.Parsing;
 
 public class CamelCaseParser : IWordParser
 {
-
-    public bool TryGetNextWord(
-        ReadOnlySpan<char> inputSlice,
-        out ReadOnlySpan<char> word,
-        out ReadOnlySpan<char> delimiter
-    )
+    public bool TryParse(ReadOnlySpan<char> input, out IReadOnlyList<WordPosition> words)
     {
-        word      = ReadOnlySpan<char>.Empty;
-        delimiter = ReadOnlySpan<char>.Empty;
-
-        for ( int i = 0; i < inputSlice.Length - 1; i++ )
+        /*we cannot parse an empty string*/
+        if ( input.IsEmpty )
         {
-            char current = inputSlice[i];
+            words = Array.Empty<WordPosition>();
 
-            if ( !char.IsDigit( current ) && !char.IsLower( current ) ) { return false; }
-
-            char next = inputSlice[i + 1];
-
-            if ( !char.IsUpper( next ) ) { continue; }
-
-            word = inputSlice[..(i + 1)];
-
-            return true;
+            return false;
         }
 
-        word = inputSlice;
+        /*camel case does not allow first char to be anything but lowercase letter*/
+        if ( !input[0].IsLower() )
+        {
+            words = Array.Empty<WordPosition>();
+
+            return false;
+        }
+
+        var wordsRw = new List<WordPosition>();
+        words = wordsRw;
+
+        for ( int i = 0; i < input.Length; i++ )
+        {
+            char current = input[i];
+
+            /*camel case does only allow letters or digits*/
+            if ( !current.IsLetterOrDigit() ) { return false; }
+
+            if ( IsWordStart( input, i + 1 ) || input.IsAtEnd( i ) )
+            {
+                wordsRw.Add( new WordPosition( i, i ) );
+            }
+        }
 
         return true;
+    }
+
+    public static bool IsWordStart(ReadOnlySpan<char> input, int index)
+    {
+        if ( index >= input.Length )
+        {
+            return false;
+        }
+
+        return input[index].IsUpper();
     }
 }

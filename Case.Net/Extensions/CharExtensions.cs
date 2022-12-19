@@ -26,4 +26,14 @@ public static class CharExtensions
     {
         return self == '-';
     }
+
+    public static bool IsLower(this char self)
+    {
+        return char.IsLower( self );
+    }
+
+    public static bool IsUpper(this char self)
+    {
+        return char.IsUpper( self );
+    }
 }

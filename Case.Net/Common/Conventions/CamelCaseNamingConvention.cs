@@ -4,110 +4,32 @@ using Case.Net.Parsing;
 
 namespace Case.Net.Common.Conventions;
 
-public class CamelCaseNamingConvention : INamingConvention
+public class CamelCaseNamingConvention : NamingConvention
 {
     private readonly IWordEmitter _wordEmitter = CamelCaseWordEmitter.Instance;
 
-    public string Name => "camelCase";
+    private readonly CamelCaseParser _parser = new ();
 
-    public CasedString Convert(CasedString source)
+    public CamelCaseNamingConvention() : base( "camelCase" ) { }
+
+    public override bool TryConvert(CasedString input, out CasedString output)
     {
-        List<string> words = new ();
-
-        for ( int i = 0; i < source.WordCount(); i++ )
-        {
-            var word = _wordEmitter.EmitWord( source, i );
-            words.Add( word );
-        }
-
-        // return new CasedString( string.Empty, string.Empty, Array.Empty<string>(), words, this );
         throw new NotImplementedException();
-
     }
 
-    public CasedString Parse(ReadOnlySpan<char> input)
+    public override bool TryParse(ReadOnlySpan<char> input, out CasedString output)
     {
-        if ( !TryParse( input, out CasedString output ) )
+        if ( !_parser.TryParse( input, out var wordPositions ) )
         {
-            throw new Exception( "Failed to parse input" );
+            output = CasedString.Empty;
+
+            return false;
         }
 
-        return output;
+        input.SplitWithWordPositions( wordPositions, out var words, out var delimiters );
+
+        output = new CasedString( string.Empty, string.Empty, words, delimiters, this );
+
+        return true;
     }
-
-    public bool TryParse(ReadOnlySpan<char> input, out CasedString output)
-    {
-        output = CasedString.Empty;
-
-        var parser = new CamelCaseParser();
-
-        var position  = 0;
-        var words     = new List<Word>();
-        var wordIndex = 0;
-
-        while ( position < input.Length )
-        {
-            if ( !parser.TryGetNextWord(
-                     input.Slice( position ),
-                     out var wordSlice,
-                     out var delimiterSlice
-                 ) )
-            {
-                return false;
-            }
-
-
-        }
-
-        throw new NotImplementedException();
-
-        /*if ( input.Length is 0 ) { return false; }
-
-        /*camelCase string should start with a lower letter#1#
-        if ( !char.IsLower( input[0] ) ) { return false; }
-
-        if ( input.Length is 1 )
-        {
-            output = new CasedString( new[] {input.ToString()}, this );
-
-            return true;
-        }
-
-        List<string> words             = new ();
-        int          wordStartPosition = 0;
-
-        for ( int i = 0; i < input.Length; i++ )
-        {
-            char current = input[i];
-
-            if ( !char.IsLetterOrDigit( current ) )
-            {
-                return false;
-            }
-
-            if ( i == input.Length - 1 )
-            {
-                words.Add( input.Slice( wordStartPosition ).ToString() );
-
-                break;
-            }
-
-            char next = input[i + 1];
-
-            bool isWordEnd   = char.IsLower( current ) || char.IsDigit( current );
-            bool isWordStart = char.IsUpper( next );
-
-            if ( isWordEnd && isWordStart )
-            {
-                var wordLength = i - wordStartPosition + 1;
-                words.Add(input.Slice(wordStartPosition, wordLength).ToString());
-                wordStartPosition += wordLength;
-            }
-        }
-
-        output = new CasedString( words, this );
-
-        return true;*/
-    }
-
 }

@@ -4,9 +4,11 @@ public interface INamingConvention
 {
     string Name { get; }
 
-    CasedString Convert(CasedString source);
+    bool TryConvert(CasedString input, out CasedString output);
+
+    CasedString Convert(CasedString input);
 
     CasedString Parse(ReadOnlySpan<char> input);
 
-    bool TryParse(ReadOnlySpan<char> input,out CasedString output);
+    bool TryParse(ReadOnlySpan<char> input, out CasedString output);
 }

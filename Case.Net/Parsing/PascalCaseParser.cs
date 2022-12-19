@@ -1,33 +1,42 @@
-﻿namespace Case.Net.Parsing;
+﻿using Case.Net.Extensions;
+
+namespace Case.Net.Parsing;
 
 public class PascalCaseParser : IWordParser
 {
-
-    public bool TryGetNextWord(
-        ReadOnlySpan<char> inputSlice,
-        out ReadOnlySpan<char> word,
-        out ReadOnlySpan<char> delimiter
-    )
+    public bool TryParse(ReadOnlySpan<char> input, out IReadOnlyList<WordPosition> words)
     {
-        word      = ReadOnlySpan<char>.Empty;
-        delimiter = ReadOnlySpan<char>.Empty;
-
-        for ( int i = 0; i < inputSlice.Length - 1; i++ )
+        /*we cannot parse an empty string*/
+        if ( input.IsEmpty )
         {
-            char current = inputSlice[i];
+            words = Array.Empty<WordPosition>();
 
-            if ( !char.IsLetterOrDigit( current ) ) { return false; }
-
-            char next = inputSlice[i + 1];
-
-            if ( !char.IsUpper( next ) ) { continue; }
-
-            word = inputSlice[..(i + 1)];
-
-            return true;
+            return false;
         }
 
-        word = inputSlice;
+        /*pascal case does not allow first char to be anything but uppercase letter*/
+        if ( !input[0].IsUpper() )
+        {
+            words = Array.Empty<WordPosition>();
+
+            return false;
+        }
+
+        var wordsRw = new List<WordPosition>();
+        words = wordsRw;
+
+        for ( int i = 0; i < input.Length; i++ )
+        {
+            char current = input[i];
+
+            /*pascal case does only allow letters or digits*/
+            if ( !current.IsLetterOrDigit() ) { return false; }
+
+            if ( CamelCaseParser.IsWordStart( input, i + 1 ) || input.IsAtEnd( i ) )
+            {
+                wordsRw.Add( new WordPosition( i, i ) );
+            }
+        }
 
         return true;
     }

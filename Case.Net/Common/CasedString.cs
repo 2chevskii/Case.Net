@@ -8,57 +8,25 @@ namespace Case.Net.Common;
 public readonly struct CasedString
 {
     public static readonly CasedString Empty = new CasedString(
+        /*string.Empty,
         string.Empty,
-        string.Empty,
-        Array.Empty<Delimiter>(),
-        Array.Empty<Word>(),
-        new MixedNamingConvention()
+        Array.Empty<string>(),
+        Array.Empty<string>(),
+        new MixedNamingConvention()*/
     );
 
     public string Prefix { get; }
     public string Suffix { get; }
-    public IReadOnlyList<Word> Words { get; }
-    public IReadOnlyList<Delimiter> Delimiters { get; }
+    public IReadOnlyList<string> Words { get; }
+    public IReadOnlyList<string> Delimiters { get; }
     public INamingConvention NamingConvention { get; }
 
-    public CasedString(
-        string prefix,
-        string suffix,
-        IReadOnlyList<Delimiter> delimiters,
-        IReadOnlyList<Word> words,
-        INamingConvention namingConvention
-    )
+    public CasedString(string prefix, string suffix, IEnumerable<string> words, IEnumerable<string> delimiters, INamingConvention namingConvention)
     {
         Prefix           = prefix;
         Suffix           = suffix;
-        Delimiters       = delimiters;
-        Words            = words;
+        Words            = words.ToArray();
+        Delimiters       = delimiters.ToArray();
         NamingConvention = namingConvention;
-    }
-
-    public CasedString(IReadOnlyList<Word> words, INamingConvention namingConvention)
-    {
-        Prefix           = string.Empty;
-        Suffix           = string.Empty;
-        Words            = words;
-        Delimiters       = Array.Empty<Delimiter>();
-        NamingConvention = namingConvention;
-    }
-
-    public override string ToString()
-    {
-        StringBuilder sb = new StringBuilder();
-        sb.Append( Prefix );
-
-        for ( int i = 0; i < Words.Count - 1; i++ )
-        {
-            sb.Append( Words[i] );
-            sb.Append( Delimiters[0] );
-        }
-
-        sb.Append( Words[0] );
-        sb.Append( Suffix );
-
-        return sb.ToString();
     }
 }

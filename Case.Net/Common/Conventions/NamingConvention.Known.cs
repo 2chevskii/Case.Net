@@ -5,7 +5,7 @@ using Case.Net.Emit.Words;
 
 namespace Case.Net.Common.Conventions;
 
-public abstract partial class NamingConvention
+/*public abstract partial class NamingConvention
 {
     public static readonly NamingConvention Mixed;
     public static readonly NamingConvention PascalCase;
@@ -14,4 +14,4 @@ public abstract partial class NamingConvention
     public static readonly NamingConvention KebabCase;
     public static readonly NamingConvention TrainCase;
 
-}
+}*/

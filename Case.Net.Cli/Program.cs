@@ -1,39 +1,42 @@
 ﻿using Case.Net.Common.Conventions;
-
-using Sprache;
+using Case.Net.Extensions;
 
 namespace Case.Net.Cli;
 
 public class Program
 {
-    static Parser<string> dashParser = Parse.Char( '-' ).Select(x => x.ToString());
-    static Parser<string> firstWordParser = from firstLetter in Parse.Lower
-                                            from restString in Parse.Lower.Many()
-                                                                    .Or( Parse.Digit.Many() )
-                                                                    .Text()
-                                            select string.Concat( firstLetter, restString );
-    static Parser<string> otherWordsParser = Parse.Lower.AtLeastOnce().Or( Parse.Digit.AtLeastOnce() ).Text();
-    static Parser<IEnumerable<string>> kebabParser = from first in firstWordParser
-                                                     from rest in dashParser
-                                                                  .Then( dash => otherWordsParser )
-                                                                  .Many()
-                                                     select new[] {first}.Concat( rest );
-    public static void Main(string[] args)
+    static class Strings
     {
-        /*var camelCase  = new CamelCaseNamingConvention();
-        var pascalCase = new PascalCaseNamingConvention();
-        var snakeCase  = new SnakeCaseNamingConvention();
+        public const string CamelCase  = "camel0CasedString";
+        public const string PascalCase = "PascalCased0String";
+        public const string SnakeCase  = "snake_cased_string";
+        public const string KebabCase  = "kebab-cased-string";
+    }
 
-        var ccstr = camelCase.Parse( "camelCasedString" );
-        var pcstr = pascalCase.Parse( "PascalCasedString" );
-        var scstr = snakeCase.Parse( "snake_cased_string" );
+    public static void Main()
+    {
+        var camelCaseConvention = new CamelCaseNamingConvention();
 
-        Console.WriteLine(ccstr.ToString());
-        Console.WriteLine(pcstr.ToString());
-        Console.WriteLine(scstr.ToString());*/
+        var camelCasedString = camelCaseConvention.Parse( Strings.CamelCase );
 
+        Console.WriteLine( camelCasedString.ToDebugString() );
 
-        var strings = kebabParser.Parse( "kebab-cased-string" );
-        Console.WriteLine( strings );
+        var pascalCaseNamingConvention = new PascalCaseNamingConvention();
+
+        var pascalCasedString = pascalCaseNamingConvention.Parse( Strings.PascalCase );
+
+        Console.WriteLine( pascalCasedString.ToDebugString() );
+
+        var snakeCaseNamingConvention = new SnakeCaseNamingConvention();
+
+        var snakeCasedString = snakeCaseNamingConvention.Parse(Strings.SnakeCase);
+
+        Console.WriteLine( snakeCasedString.ToDebugString() );
+
+        var kebabCaseNamingConvention = new KebabCaseNamingConvention();
+
+        var kebabCasedString = kebabCaseNamingConvention.Parse( Strings.KebabCase );
+
+        Console.WriteLine( kebabCasedString.ToDebugString() );
     }
 }
