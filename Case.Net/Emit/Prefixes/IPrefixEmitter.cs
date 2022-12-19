@@ -2,5 +2,5 @@
 
 public interface IPrefixEmitter
 {
-    ReadOnlySpan<char> GetPrefix(ReadOnlySpan<char> value);
+    string EmitPrefix(IReadOnlyList<string> words);
 }

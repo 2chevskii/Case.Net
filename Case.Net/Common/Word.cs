@@ -1,39 +1,24 @@
-﻿using System.Diagnostics;
+﻿namespace Case.Net.Common;
 
-using Case.Net.Parsing.Splitters;
-
-namespace Case.Net.Common;
-
-[DebuggerDisplay( "{Position}: \"{Value}\"" )]
-public readonly struct Word : IEquatable<Word>
+public struct Word
 {
-    public Position Position { get; }
+    public int Index { get; }
     public string Value { get; }
-    public ISplitter? Splitter { get; }
+    public int Length => Value.Length;
 
-    public Word(Position position, string value, ISplitter? splitter)
+    public Word(int index, string value)
     {
-        Position = position;
-        Value    = value;
-        Splitter = splitter;
+        Index  = index;
+        Value  = value;
     }
 
-    public bool Equals(Word other) =>
-    Position.Equals( other.Position ) && Value == other.Value && Equals( Splitter, other.Splitter );
+    public override string ToString() => Value;
 
-    public override bool Equals(object? obj) => obj is Word other && Equals( other );
+    public bool StartsWith(char @char) => Value.StartsWith( @char );
 
-    public override int GetHashCode()
-    {
-        if ( Splitter is not null )
-        {
-            return HashCode.Combine(
-                Position.GetHashCode(),
-                Value.GetHashCode(),
-                Splitter.GetHashCode()
-            );
-        }
+    public bool StartWith(string @string) => Value.StartsWith( @string );
 
-        return HashCode.Combine( Position.GetHashCode(), Value.GetHashCode() );
-    }
+    public bool EndsWith(char @char) => Value.EndsWith( @char );
+
+    public bool EndsWith(string @string) => Value.EndsWith( @string );
 }

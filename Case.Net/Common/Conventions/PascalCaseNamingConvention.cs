@@ -1,35 +1,30 @@
 ﻿using Case.Net.Emit.Words;
 using Case.Net.Extensions;
-using Case.Net.Parsing;
 
 namespace Case.Net.Common.Conventions;
 
-public class CamelCaseNamingConvention : INamingConvention
+public class PascalCaseNamingConvention : INamingConvention
 {
-    private readonly IWordEmitter _wordEmitter = CamelCaseWordEmitter.Instance;
-
-    public string Name => "camelCase";
+    public string Name => "PascalCase";
 
     public CasedString Convert(CasedString source)
     {
         List<string> words = new ();
 
-        for ( int i = 0; i < source.WordCount(); i++ )
+        for ( var i = 0; i < source.WordCount(); i++ )
         {
-            var word = _wordEmitter.EmitWord( source, i );
-            words.Add( word );
+            words.Add(PascalCaseWordEmitter.Instance.EmitWord(source, i));
         }
 
-        // return new CasedString( string.Empty, string.Empty, Array.Empty<string>(), words, this );
+        // return new CasedString( words, this );
         throw new NotImplementedException();
-
     }
 
     public CasedString Parse(ReadOnlySpan<char> input)
     {
-        if ( !TryParse( input, out CasedString output ) )
+        if ( !TryParse( input, out var output ) )
         {
-            throw new Exception( "Failed to parse input" );
+            throw new Exception();
         }
 
         return output;
@@ -37,34 +32,13 @@ public class CamelCaseNamingConvention : INamingConvention
 
     public bool TryParse(ReadOnlySpan<char> input, out CasedString output)
     {
-        output = CasedString.Empty;
+        /*output = CasedString.Empty;
 
-        var parser = new CamelCaseParser();
+        if ( input.Length is 0 )
+            return false;
 
-        var position  = 0;
-        var words     = new List<Word>();
-        var wordIndex = 0;
-
-        while ( position < input.Length )
-        {
-            if ( !parser.TryGetNextWord(
-                     input.Slice( position ),
-                     out var wordSlice,
-                     out var delimiterSlice
-                 ) )
-            {
-                return false;
-            }
-
-
-        }
-
-        throw new NotImplementedException();
-
-        /*if ( input.Length is 0 ) { return false; }
-
-        /*camelCase string should start with a lower letter#1#
-        if ( !char.IsLower( input[0] ) ) { return false; }
+        if ( !char.IsUpper( input[0] ) )
+            return false;
 
         if ( input.Length is 1 )
         {
@@ -87,7 +61,7 @@ public class CamelCaseNamingConvention : INamingConvention
 
             if ( i == input.Length - 1 )
             {
-                words.Add( input.Slice( wordStartPosition ).ToString() );
+                words.Add(input.Slice(wordStartPosition).ToString());
 
                 break;
             }
@@ -100,7 +74,7 @@ public class CamelCaseNamingConvention : INamingConvention
             if ( isWordEnd && isWordStart )
             {
                 var wordLength = i - wordStartPosition + 1;
-                words.Add(input.Slice(wordStartPosition, wordLength).ToString());
+                words.Add( input.Slice( wordStartPosition, wordLength ).ToString() );
                 wordStartPosition += wordLength;
             }
         }
@@ -108,6 +82,7 @@ public class CamelCaseNamingConvention : INamingConvention
         output = new CasedString( words, this );
 
         return true;*/
-    }
 
+        throw new NotImplementedException();
+    }
 }

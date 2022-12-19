@@ -2,5 +2,5 @@
 
 public interface ISuffixEmitter
 {
-    ReadOnlySpan<char> GetSuffix(ReadOnlySpan<char> value);
+    string EmitSuffix(IReadOnlyList<string> words);
 }

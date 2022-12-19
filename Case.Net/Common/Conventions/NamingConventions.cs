@@ -3,12 +3,9 @@
 public static class NamingConventions
 {
     public static INamingConvention Detect(
-        Prefix prefix,
-        Suffix suffix,
-        IReadOnlyList<Word> words,
-        IReadOnlyList<Delimiter> delimiters
+        ReadOnlySpan<char> input
     )
     {
-        return new MixedNamingConvention();
+        throw new NotImplementedException();
     }
 }

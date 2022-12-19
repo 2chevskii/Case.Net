@@ -5,29 +5,12 @@ namespace Case.Net.Emit.Words;
 
 public class CamelCaseWordEmitter : IWordEmitter
 {
-    public Word EmitWord(CasedString source, int wordIndex)
+    public static readonly CamelCaseWordEmitter Instance = new ();
+
+    public string EmitWord(CasedString source, int wordIndex)
     {
-        /*Word       word  = source.WordAt( wordIndex );
-        Span<char> value = new Span<char>( null, 0, word.Value.Length );
+        if ( wordIndex is 0 ) { return source.WordAt( wordIndex ).ToLowerInvariant(); }
 
-        if ( source.IsFirst( word ) )
-        {
-            for ( int i = 0; i < word.Value.Length; i++ )
-            {
-                value[i] = char.ToLowerInvariant( word.Value[i] );
-            }
-        }
-        else
-        {
-            value[0] = char.ToLowerInvariant( word.Value[0] );
-            for ( int i = 1; i < word.Value.Length; i++ )
-            {
-                value[i] = char.ToLowerInvariant( word.Value[i] );
-            }
-        }
-
-        return new string( value );*/
-
-        throw new NotImplementedException();
+        return PascalCaseWordEmitter.Instance.EmitWord( source, wordIndex );
     }
 }

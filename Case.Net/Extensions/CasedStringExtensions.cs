@@ -1,44 +1,59 @@
 ﻿using Case.Net.Common;
+using Case.Net.Common.Conventions;
 
 namespace Case.Net.Extensions;
 
 public static class CasedStringExtensions
 {
-    /*public static int WordCount(this CasedString self)
+    public static bool IsKnownConvention(this CasedString self)
+    {
+        return self.NamingConvention is not MixedNamingConvention;
+    }
+
+    public static bool IsEmpty(this CasedString self)
+    {
+        return self.WordCount() is 0;
+    }
+
+    public static int WordCount(this CasedString self)
     {
         return self.Words.Count;
     }
 
-    public static Word WordAt(this CasedString self, int index)
+    public static bool HasPrefix(this CasedString self)
     {
-        return self.Words[index];
+        return !self.Prefix.IsEmpty();
     }
 
-    public static bool IsLast(this CasedString self, int index)
+    public static bool HasSuffix(this CasedString self)
     {
-        return index == self.WordCount() - 1;
+        return !self.Suffix.IsEmpty();
     }
 
-    public static bool IsLast(this CasedString self, Word word)
+    public static bool IsSingleWord(this CasedString self)
     {
-        return self.IsLast( self.IndexOf( word ) );
+        return self.WordCount() is 1;
     }
 
-    public static bool IsFirst(this CasedString self, Word word)
+    public static string WordAt(this CasedString self, int index) => self.Words[index].ToString();
+
+    public static string ToDebugString(this CasedString self)
     {
-        return self.IndexOf( word ) == 0;
+        const string format = @"
+Words: [{0}]
+Delimiters: [{1}]
+Prefix: {2}
+Suffix: {3}
+";
+
+        string debugView = string.Format(
+            format,
+            string.Join( ", ", self.Words.Select( word => $"\"{word}\"" ) ),
+            string.Join( ", ", self.Delimiters.Select( delimiter => $"\"{delimiter}\"" ) ),
+            self.Prefix,
+            self.Suffix
+        );
+
+        return debugView;
     }
-
-    public static int IndexOf(this CasedString self, Word word)
-    {
-        for ( var i = 0; i < self.Words.Count; i++ )
-        {
-            var entry = self.Words[i];
-
-            if ( entry.Equals( word ) )
-                return i;
-        }
-
-        return -1;
-    }*/
 }
