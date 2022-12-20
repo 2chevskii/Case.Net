@@ -13,4 +13,9 @@ public static class NamingConventions
     {
         throw new NotImplementedException();
     }
+
+    public static CasedString Parse(ReadOnlySpan<char> input)
+    {
+        throw new NotImplementedException();
+    }
 }
