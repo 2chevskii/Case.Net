@@ -7,4 +7,8 @@
     <RootNamespace>System.Text.Json</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Case.Net\Case.Net.csproj" />
+  </ItemGroup>
+
 </Project>

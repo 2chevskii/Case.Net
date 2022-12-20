@@ -56,4 +56,30 @@ Suffix: {3}
 
         return debugView;
     }
+
+    public static bool HasDelimiterFor(this CasedString self, int wordIndex)
+    {
+        for ( var i = 0; i < self.Delimiters.Count; i++ )
+        {
+            Delimiter delimiter = self.Delimiters[i];
+
+            if ( wordIndex == delimiter.PreviousWordIndex )
+                return true;
+        }
+
+        return false;
+    }
+
+    public static Delimiter GetDelimiterFor(this CasedString self, int wordIndex)
+    {
+        for ( var i = 0; i < self.Delimiters.Count; i++ )
+        {
+            Delimiter delimiter = self.Delimiters[i];
+
+            if ( wordIndex == delimiter.PreviousWordIndex )
+                return delimiter;
+        }
+
+        return Delimiter.Empty;
+    }
 }

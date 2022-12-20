@@ -2,8 +2,9 @@
 
 namespace Case.Net.Emit.Sanitizers;
 
-public class LetterSanitizer : ISanitizer
+public class LetterOrDigitSanitizer : ISanitizer
 {
+
     public ReadOnlySpan<char> Sanitize(ReadOnlySpan<char> input)
     {
         Span<char> buffer = stackalloc char[input.Length];
@@ -14,12 +15,13 @@ public class LetterSanitizer : ISanitizer
         {
             char current = input[i];
 
-            if ( current.IsLetter() ) { buffer[bufferCount++] = current; }
+            if ( current.IsLetterOrDigit() ) { buffer[bufferCount++] = current; }
         }
 
-        if ( bufferCount is 0 ) { return Array.Empty<char>(); }
+        if ( bufferCount is 0 ) { return ReadOnlySpan<char>.Empty; }
 
         Span<char> result = new char[bufferCount];
+
         buffer.CopyTo( result );
 
         return result;
