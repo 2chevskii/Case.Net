@@ -9,16 +9,22 @@ public sealed class SingleCharSuffixEmitter : ISuffixEmitter
 
     public SingleCharSuffixEmitter(char suffixChar, bool checkValueEnd = true)
     {
-        SuffixChar     = suffixChar;
-        CheckValueEnd  = checkValueEnd;
+        SuffixChar = suffixChar;
+        CheckValueEnd = checkValueEnd;
         _strSuffixChar = suffixChar.ToString();
     }
 
-    public string EmitSuffix(IReadOnlyList<string> words)
+    public bool EmitSuffix(IReadOnlyList<string> words, out ReadOnlySpan<char> suffixBuffer)
     {
         if ( CheckValueEnd && words[^1][^1] == SuffixChar )
-            return string.Empty;
+        {
+            suffixBuffer = ReadOnlySpan<char>.Empty;
 
-        return _strSuffixChar;
+            return false;
+        }
+
+        suffixBuffer = _strSuffixChar.AsSpan();
+
+        return true;
     }
 }

@@ -14,11 +14,16 @@ public class SingleCharPrefixEmitter : IPrefixEmitter
         _strPrefixChar  = prefixChar.ToString();
     }
 
-    public string EmitPrefix(IReadOnlyList<string>words)
+    public bool EmitPrefix(IReadOnlyList<string>words, out ReadOnlySpan<char> prefixBuffer)
     {
         if ( CheckValueStart && words[0][0] == PrefixChar )
-            return string.Empty;
+        {
+            prefixBuffer = ReadOnlySpan<char>.Empty;
+            return false;
+        }
 
-        return _strPrefixChar;
+        prefixBuffer = _strPrefixChar;
+
+        return true;
     }
 }

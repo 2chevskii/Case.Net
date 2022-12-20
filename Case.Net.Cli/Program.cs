@@ -1,4 +1,9 @@
 ﻿using Case.Net.Common.Conventions;
+using Case.Net.Emit.Delimiters;
+using Case.Net.Emit.Prefixes;
+using Case.Net.Emit.Sanitizers;
+using Case.Net.Emit.Suffixes;
+using Case.Net.Emit.Words;
 using Case.Net.Extensions;
 
 namespace Case.Net.Cli;
@@ -46,5 +51,11 @@ public class Program
         Console.WriteLine(kebabCaseNamingConvention.Convert(pascalCasedString).ToDebugString());
 
         Console.WriteLine( snakeCaseNamingConvention.Convert( kebabCasedString ).ToDebugString() );
+
+        var trainCaseNamingConvention = NamingConventions.TrainCase;
+
+        Console.WriteLine( trainCaseNamingConvention.Convert( kebabCasedString ).ToDebugString() );
+
+        Console.WriteLine(trainCaseNamingConvention.Parse("Train-Cased-String-Here").ToDebugString());
     }
 }
