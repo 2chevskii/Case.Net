@@ -1,5 +1,6 @@
 ﻿using Case.Net.Common;
 using Case.Net.Common.Conventions;
+using Case.Net.Common.Entities;
 
 namespace System.Text.Json;
 

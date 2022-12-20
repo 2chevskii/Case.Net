@@ -1,4 +1,5 @@
-﻿using Case.Net.Emitters.Sanitizers;
+﻿using Case.Net.Common.Entities;
+using Case.Net.Emitters.Sanitizers;
 using Case.Net.Emitters.Words;
 using Case.Net.Extensions;
 using Case.Net.Parsing;
@@ -25,9 +26,9 @@ public class PascalCaseNamingConvention : NamingConvention
 
         List<string> words = new List<string>( input.WordCount() );
 
-        for ( var i = 0; i < input.WordCount(); i++ )
+        for ( int i = 0; i < input.WordCount(); i++ )
         {
-            if ( _wordEmitter.EmitWord( input, i, out var wordBuffer ) )
+            if ( _wordEmitter.EmitWord( input, i, out ReadOnlySpan<char> wordBuffer ) )
             {
                 words.Add( wordBuffer.ToString() );
             }
@@ -46,16 +47,16 @@ public class PascalCaseNamingConvention : NamingConvention
 
     public override bool TryParse(ReadOnlySpan<char> input, out CasedString output)
     {
-        if ( !new PascalCaseParser().TryParse( input, out var wordPositions ) )
+        if ( !new PascalCaseParser().TryParse( input, out IReadOnlyList<WordPosition>? wordPositions ) )
         {
             output = CasedString.Empty;
 
             return false;
         }
 
-        input.SplitWithWordPositions( wordPositions, out var words, out var delimiters );
+        input.SplitWithWordPositions( wordPositions, out IReadOnlyList<string>? words, out IReadOnlyList<Delimiter>? delimiters );
 
-        var cs = new CasedString( string.Empty, string.Empty, words, delimiters, this );
+        CasedString cs = new CasedString( string.Empty, string.Empty, words, delimiters, this );
 
         output = cs;
 

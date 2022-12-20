@@ -1,4 +1,5 @@
-﻿using Case.Net.Emitters.Delimiters;
+﻿using Case.Net.Common.Entities;
+using Case.Net.Emitters.Delimiters;
 using Case.Net.Emitters.Sanitizers;
 using Case.Net.Emitters.Words;
 using Case.Net.Extensions;
@@ -6,20 +7,15 @@ using Case.Net.Parsing;
 
 namespace Case.Net.Common.Conventions;
 
-public class KebabCaseNamingConvention : NamingConvention
+public class SnakeCaseNamingConvention : NamingConvention
 {
     private readonly AllLowerWordEmitter        _wordEmitter;
     private readonly SingleCharDelimiterEmitter _delimiterEmitter;
 
-    public KebabCaseNamingConvention() : base( "kebab-case" )
+    public SnakeCaseNamingConvention() : base( "snake_case" )
     {
         _wordEmitter      = new AllLowerWordEmitter( new LetterOrDigitSanitizer() );
-        _delimiterEmitter = new SingleCharDelimiterEmitter( '-', false );
-        /*
-         * we dont really need to waste CPU cycles on checking word start/end
-         * before emitting the delimiter
-         * because sanitizer won't allow dash character anyway
-         */
+        _delimiterEmitter = new SingleCharDelimiterEmitter( '_', false );
     }
 
     public override bool TryConvert(CasedString input, out CasedString output)
@@ -35,7 +31,7 @@ public class KebabCaseNamingConvention : NamingConvention
 
         for ( int i = 0; i < input.WordCount(); i++ )
         {
-            if ( _wordEmitter.EmitWord( input, i, out var wordBuffer ) )
+            if ( _wordEmitter.EmitWord( input, i, out ReadOnlySpan<char> wordBuffer ) )
             {
                 words.Add( wordBuffer.ToString() );
             }
@@ -49,19 +45,16 @@ public class KebabCaseNamingConvention : NamingConvention
 
             for ( int i = 0; i < words.Count - 1; i++ )
             {
-                if ( _delimiterEmitter.EmitDelimiter(words, i, out var delimiterBuffer) )
+                if ( _delimiterEmitter.EmitDelimiter( words, i, out ReadOnlySpan<char> delimiterBuffer ) )
                 {
-                    var delimiter = new Delimiter( i, delimiterBuffer.ToString() );
+                    Delimiter delimiter = new Delimiter( i, delimiterBuffer.ToString() );
                     delimiterList.Add( delimiter );
                 }
             }
 
             delimiters = delimiterList;
         }
-        else
-        {
-            delimiters = Array.Empty<Delimiter>();
-        }
+        else { delimiters = Array.Empty<Delimiter>(); }
 
         output = new CasedString( string.Empty, string.Empty, words, delimiters, this );
 
@@ -70,17 +63,18 @@ public class KebabCaseNamingConvention : NamingConvention
 
     public override bool TryParse(ReadOnlySpan<char> input, out CasedString output)
     {
-        if ( !new KebabCaseParser().TryParse( input, out var wordPositions ) )
+        if ( !new SnakeCaseParser().TryParse( input, out IReadOnlyList<WordPosition>? wordPositions ) )
         {
             output = CasedString.Empty;
 
             return false;
         }
 
-        input.SplitWithWordPositions( wordPositions, out var words, out var delimiters );
+        input.SplitWithWordPositions( wordPositions, out IReadOnlyList<string>? words, out IReadOnlyList<Delimiter>? delimiters );
 
         output = new CasedString( string.Empty, string.Empty, words, delimiters, this );
 
         return true;
     }
+
 }

@@ -1,4 +1,5 @@
-﻿using Case.Net.Emitters.Delimiters;
+﻿using Case.Net.Common.Entities;
+using Case.Net.Emitters.Delimiters;
 using Case.Net.Emitters.Prefixes;
 using Case.Net.Emitters.Suffixes;
 using Case.Net.Emitters.Words;
@@ -60,7 +61,7 @@ public class GenericNamingConvention : NamingConvention
 
         for ( int i = 0; i < input.WordCount(); i++ )
         {
-            if ( WordEmitter.EmitWord( input, i, out var wordBuffer ) )
+            if ( WordEmitter.EmitWord( input, i, out ReadOnlySpan<char> wordBuffer ) )
             {
                 words.Add( wordBuffer.ToString() );
             }
@@ -68,14 +69,14 @@ public class GenericNamingConvention : NamingConvention
 
         string prefix = string.Empty;
 
-        if ( PrefixEmitter.EmitPrefix( words, out var prefixBuffer ) )
+        if ( PrefixEmitter.EmitPrefix( words, out ReadOnlySpan<char> prefixBuffer ) )
         {
             prefix = prefixBuffer.ToString();
         }
 
         string suffix = string.Empty;
 
-        if ( SuffixEmitter.EmitSuffix( words, out var suffixBuffer ) )
+        if ( SuffixEmitter.EmitSuffix( words, out ReadOnlySpan<char> suffixBuffer ) )
         {
             suffix = suffixBuffer.ToString();
         }
@@ -84,7 +85,7 @@ public class GenericNamingConvention : NamingConvention
 
         for ( int i = 0; i < words.Count - 1; i++ )
         {
-            if ( !DelimiterEmitter.EmitDelimiter( words, i, out var delimiterBuffer ) )
+            if ( !DelimiterEmitter.EmitDelimiter( words, i, out ReadOnlySpan<char> delimiterBuffer ) )
             {
                 continue;
             }
@@ -119,27 +120,14 @@ public class GenericNamingConvention : NamingConvention
             return AcceptEmptyInput;
         }
 
-        /*if ( !new SnakeCaseParser().TryParse( input, out var wordPositions ) )
+        if ( !Parser.TryParse( input, out IReadOnlyList<WordPosition>? wordPositions ) )
         {
             output = CasedString.Empty;
 
             return false;
         }
 
-        input.SplitWithWordPositions( wordPositions, out var words, out var delimiters );
-
-        output = new CasedString( string.Empty, string.Empty, words, delimiters, this );
-
-        return true;*/
-
-        if ( !Parser.TryParse( input, out var wordPositions ) )
-        {
-            output = CasedString.Empty;
-
-            return false;
-        }
-
-        input.SplitWithWordPositions( wordPositions, out var words, out var delimiters );
+        input.SplitWithWordPositions( wordPositions, out IReadOnlyList<string>? words, out IReadOnlyList<Delimiter>? delimiters );
 
         output = new CasedString( string.Empty, string.Empty, words, delimiters, this );
 

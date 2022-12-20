@@ -2,8 +2,9 @@
 using System.Reflection;
 
 using Case.Net.Common.Conventions;
+using Case.Net.Common.Entities;
 
-namespace Case.Net.Common;
+namespace Case.Net.Common.NamingManagers;
 
 /// <summary>
 /// Contains <see cref="INamingConvention"/>s from all loaded assemblies
@@ -33,7 +34,7 @@ public sealed class GlobalNamingManager : INamingManager
 
         foreach ( Type type in conventions )
         {
-            var convention = (INamingConvention) Activator.CreateInstance( type )!;
+            INamingConvention convention = (INamingConvention) Activator.CreateInstance( type )!;
 
             yield return convention;
         }

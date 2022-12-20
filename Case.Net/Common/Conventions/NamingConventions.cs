@@ -1,4 +1,5 @@
-﻿using Case.Net.Parsing;
+﻿using Case.Net.Common.Entities;
+using Case.Net.Parsing;
 
 namespace Case.Net.Common.Conventions;
 
@@ -15,7 +16,7 @@ public static class NamingConventions
         ReadOnlySpan<char> input
     )
     {
-        var parsed = Parse( input );
+        CasedString parsed = Parse( input );
 
         return parsed.NamingConvention;
     }

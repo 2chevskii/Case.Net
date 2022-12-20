@@ -1,6 +1,7 @@
 ﻿using System.Xml.Schema;
 
 using Case.Net.Common;
+using Case.Net.Common.Entities;
 using Case.Net.Parsing;
 
 namespace Case.Net.Extensions;
@@ -19,8 +20,8 @@ public static class ReadOnlySpanExtensions
         out IReadOnlyList<Delimiter> delimiters
     )
     {
-        var wordsRw      = new List<string>();
-        var delimitersRw = new List<Delimiter>();
+        List<string>?    wordsRw      = new List<string>();
+        List<Delimiter>? delimitersRw = new List<Delimiter>();
         words      = wordsRw;
         delimiters = delimitersRw;
 
@@ -28,18 +29,18 @@ public static class ReadOnlySpanExtensions
 
         for ( int i = 0; i < wordPositions.Count; i++ )
         {
-            var (wordEnd, delimiterEnd) = wordPositions[i];
+            (int wordEnd, int delimiterEnd) = wordPositions[i];
 
-            var wordLength = wordEnd - wordStart + 1;
-            var wordSlice  = input.Slice( wordStart, wordLength );
+            int                wordLength = wordEnd - wordStart + 1;
+            ReadOnlySpan<char> wordSlice  = input.Slice( wordStart, wordLength );
             wordsRw.Add( wordSlice.ToString() );
 
             if ( wordPositions[i].HasDelimiter )
             {
-                var delimiterStart  = wordEnd + 1;
-                var delimiterLength = delimiterEnd - delimiterStart + 1;
+                int delimiterStart  = wordEnd + 1;
+                int delimiterLength = delimiterEnd - delimiterStart + 1;
 
-                var delimiterSlice = input.Slice( delimiterStart, delimiterLength );
+                ReadOnlySpan<char> delimiterSlice = input.Slice( delimiterStart, delimiterLength );
                 delimitersRw.Add( new Delimiter( i, delimiterSlice.ToString() ) );
                 wordStart = delimiterEnd + 1;
             }

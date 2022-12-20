@@ -1,4 +1,4 @@
-﻿namespace Case.Net.Common;
+﻿namespace Case.Net.Common.Entities;
 
 public readonly struct Delimiter
 {

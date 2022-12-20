@@ -17,7 +17,7 @@ public class SingleCharDelimiterEmitter : IDelimiterEmitter
         out ReadOnlySpan<char> delimiterBuffer
     )
     {
-        var current = words[index];
+        string? current = words[index];
 
         if ( CheckWordEndStart && current.EndsWith( Delimiter ) )
         {
@@ -26,7 +26,7 @@ public class SingleCharDelimiterEmitter : IDelimiterEmitter
             return false;
         }
 
-        var next = words[index + 1];
+        string? next = words[index + 1];
 
         if ( CheckWordEndStart && next.StartsWith( Delimiter ) )
         {

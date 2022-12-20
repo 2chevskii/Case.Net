@@ -1,4 +1,5 @@
 ﻿using Case.Net.Common;
+using Case.Net.Common.Entities;
 using Case.Net.Emitters.Sanitizers;
 
 namespace Case.Net.Emitters.Words;

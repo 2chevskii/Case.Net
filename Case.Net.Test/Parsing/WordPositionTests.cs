@@ -2,7 +2,7 @@ using Case.Net.Parsing;
 
 using FluentAssertions;
 
-namespace Case.Net.Test;
+namespace Case.Net.Test.Parsing;
 
 [TestClass]
 public class WordPositionTests

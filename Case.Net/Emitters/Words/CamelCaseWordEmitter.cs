@@ -1,4 +1,5 @@
 ﻿using Case.Net.Common;
+using Case.Net.Common.Entities;
 using Case.Net.Emitters.Sanitizers;
 
 namespace Case.Net.Emitters.Words;
@@ -10,7 +11,7 @@ public class CamelCaseWordEmitter : IWordEmitter
 
     public CamelCaseWordEmitter()
     {
-        var sanitizer = new LetterOrDigitSanitizer();
+        LetterOrDigitSanitizer? sanitizer = new LetterOrDigitSanitizer();
 
         _firstUpperWordEmitter = new ( sanitizer );
         _allLowerWordEmitter   = new ( sanitizer );

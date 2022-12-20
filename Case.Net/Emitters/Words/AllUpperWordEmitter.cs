@@ -1,4 +1,5 @@
 ﻿using Case.Net.Common;
+using Case.Net.Common.Entities;
 using Case.Net.Emitters.Sanitizers;
 using Case.Net.Extensions;
 
@@ -15,7 +16,7 @@ public class AllUpperWordEmitter : IWordEmitter
 
     public bool EmitWord(CasedString source, int wordIndex, out ReadOnlySpan<char> wordBuffer)
     {
-        var inputWord = source.WordAt( wordIndex );
+        string? inputWord = source.WordAt( wordIndex );
 
         if ( inputWord.Length is 0 )
         {
@@ -24,8 +25,8 @@ public class AllUpperWordEmitter : IWordEmitter
             return false;
         }
 
-        var sanitizedWord = Sanitizer.Sanitize( inputWord );
-        var targetBuffer =
+        ReadOnlySpan<char> sanitizedWord = Sanitizer.Sanitize( inputWord );
+        Span<char> targetBuffer =
         new Span<char>( GC.AllocateUninitializedArray<char>( sanitizedWord.Length ) );
 
         wordBuffer = targetBuffer;

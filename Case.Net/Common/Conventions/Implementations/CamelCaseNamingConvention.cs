@@ -1,4 +1,5 @@
-﻿using Case.Net.Emitters.Words;
+﻿using Case.Net.Common.Entities;
+using Case.Net.Emitters.Words;
 using Case.Net.Extensions;
 using Case.Net.Parsing;
 
@@ -26,9 +27,9 @@ public class CamelCaseNamingConvention : NamingConvention
 
         List<string> words = new List<string>( input.WordCount() );
 
-        for ( var i = 0; i < input.WordCount(); i++ )
+        for ( int i = 0; i < input.WordCount(); i++ )
         {
-            if ( _wordEmitter.EmitWord( input, i, out var wordBuffer ) )
+            if ( _wordEmitter.EmitWord( input, i, out ReadOnlySpan<char> wordBuffer ) )
             {
                 words.Add( wordBuffer.ToString() );
             }
@@ -41,14 +42,14 @@ public class CamelCaseNamingConvention : NamingConvention
 
     public override bool TryParse(ReadOnlySpan<char> input, out CasedString output)
     {
-        if ( !_parser.TryParse( input, out var wordPositions ) )
+        if ( !_parser.TryParse( input, out IReadOnlyList<WordPosition>? wordPositions ) )
         {
             output = CasedString.Empty;
 
             return false;
         }
 
-        input.SplitWithWordPositions( wordPositions, out var words, out var delimiters );
+        input.SplitWithWordPositions( wordPositions, out IReadOnlyList<string>? words, out IReadOnlyList<Delimiter>? delimiters );
 
         output = new CasedString( string.Empty, string.Empty, words, delimiters, this );
 

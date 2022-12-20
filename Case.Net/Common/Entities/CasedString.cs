@@ -2,8 +2,9 @@
 
 using Case.Net.Common.Conventions;
 using Case.Net.Extensions;
+using Case.Net.Internal;
 
-namespace Case.Net.Common;
+namespace Case.Net.Common.Entities;
 
 public readonly struct CasedString
 {
@@ -29,24 +30,50 @@ public readonly struct CasedString
         INamingConvention namingConvention
     )
     {
-        Prefix           = prefix;
-        Suffix           = suffix;
-        Words            = words.ToArray();
-        Delimiters       = delimiters.ToArray();
+        Prefix = prefix;
+        Suffix = suffix;
+        Words = words.ToArray();
+        Delimiters = delimiters.ToArray();
         NamingConvention = namingConvention;
     }
 
     public override string ToString()
     {
-        /*TODO: Needs cleaner impl*/
-        StringBuilder stringBuilder = new ();
+        StringBuilder stringBuilder = StringBuilderPool.Get();
 
+        AppendPrefix(stringBuilder);
+        AppendConcatenatedWords( stringBuilder );
+        AppendSuffix( stringBuilder );
+
+        string value = stringBuilder.ToString();
+
+        StringBuilderPool.Return( ref stringBuilder );
+
+        return value;
+    }
+
+    void AppendPrefix(StringBuilder stringBuilder)
+    {
         if ( Prefix.Length is not 0 )
         {
             stringBuilder.Append( Prefix );
         }
+    }
 
-        for ( var i = 0; i < Words.Count-1; i++ )
+    void AppendSuffix(StringBuilder stringBuilder)
+    {
+        if ( Suffix.Length is not 0 )
+        {
+            stringBuilder.Append( Suffix );
+        }
+    }
+
+    void AppendConcatenatedWords(StringBuilder stringBuilder)
+    {
+        if ( !Words.Any() )
+            return;
+
+        for ( int i = 0; i < Words.Count-1; i++ )
         {
             stringBuilder.Append( Words[i] );
 
@@ -57,12 +84,5 @@ public readonly struct CasedString
         }
 
         stringBuilder.Append( Words[^1] );
-
-        if ( Suffix.Length is not 0 )
-        {
-            stringBuilder.Append( Suffix );
-        }
-
-        return stringBuilder.ToString();
     }
 }

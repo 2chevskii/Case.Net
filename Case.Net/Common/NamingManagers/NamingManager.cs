@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 
 using Case.Net.Common.Conventions;
+using Case.Net.Common.Entities;
 
-namespace Case.Net.Common;
+namespace Case.Net.Common.NamingManagers;
 
 public class NamingManager : INamingManager
 {
@@ -57,13 +58,13 @@ public class NamingManager : INamingManager
 
     public void CopyTo(INamingConvention[] buffer, int index)
     {
-        var source = Values.ToArray();
+        INamingConvention[]? source = Values.ToArray();
 
-        var length = Math.Min( buffer.Length, source.Length );
+        int length = Math.Min( buffer.Length, source.Length );
 
         for ( int i = index; i < length; i++ )
         {
-            var sourceIndex = i - index;
+            int sourceIndex = i - index;
             buffer[i] = source[sourceIndex];
         }
     }
@@ -77,7 +78,7 @@ public class NamingManager : INamingManager
     {
         foreach ( INamingConvention namingConvention in Values )
         {
-            if ( namingConvention.TryParse( input, out var output ) )
+            if ( namingConvention.TryParse( input, out CasedString output ) )
             {
                 return output;
             }

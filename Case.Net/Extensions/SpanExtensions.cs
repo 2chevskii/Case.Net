@@ -6,7 +6,7 @@ public static class SpanExtensions
     {
         for ( int i = 0; i < self.Length; i++ )
         {
-            var entry = self[i];
+            T? entry = self[i];
 
             if ( predicate( entry ) )
                 return true;
@@ -19,7 +19,7 @@ public static class SpanExtensions
     {
         for ( int i = 0; i < self.Length; i++ )
         {
-            var entry = self[i];
+            T? entry = self[i];
 
             if ( !predicate( entry ) )
                 return false;
@@ -41,14 +41,14 @@ public static class SpanExtensions
             return self[0];
         }
 
-        var comparer = Comparer<V>.Default;
+        Comparer<V>? comparer = Comparer<V>.Default;
         V   minV     = valueSelector( self[0] );
         int minIndex = 0;
 
         for ( int i = 1; i < self.Length ; i++ )
         {
-            var current  = self[i];
-            var currentV = valueSelector( current );
+            T? current  = self[i];
+            V? currentV = valueSelector( current );
 
             if ( comparer.Compare( currentV, minV ) is -1 )
             {

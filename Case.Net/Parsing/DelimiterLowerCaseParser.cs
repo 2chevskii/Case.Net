@@ -17,7 +17,7 @@ public class DelimiterLowerCaseParser : IWordParser
             return false;
         }
 
-        var wordsRw = new List<WordPosition>();
+        List<WordPosition> wordsRw = new List<WordPosition>();
         words = wordsRw;
 
         for ( int i = 0; i < input.Length; i++ )

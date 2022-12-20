@@ -20,7 +20,7 @@ public class DelimiterFirstUpperParser : IWordParser
             return false;
         }
 
-        var wordsRw = new List<WordPosition>();
+        List<WordPosition>? wordsRw = new List<WordPosition>();
         words = wordsRw;
         int wordStart = 0;
 

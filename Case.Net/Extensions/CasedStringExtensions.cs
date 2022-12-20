@@ -1,5 +1,6 @@
 ﻿using Case.Net.Common;
 using Case.Net.Common.Conventions;
+using Case.Net.Common.Entities;
 
 namespace Case.Net.Extensions;
 
@@ -59,7 +60,7 @@ Suffix: {3}
 
     public static bool HasDelimiterFor(this CasedString self, int wordIndex)
     {
-        for ( var i = 0; i < self.Delimiters.Count; i++ )
+        for ( int i = 0; i < self.Delimiters.Count; i++ )
         {
             Delimiter delimiter = self.Delimiters[i];
 
@@ -72,7 +73,7 @@ Suffix: {3}
 
     public static Delimiter GetDelimiterFor(this CasedString self, int wordIndex)
     {
-        for ( var i = 0; i < self.Delimiters.Count; i++ )
+        for ( int i = 0; i < self.Delimiters.Count; i++ )
         {
             Delimiter delimiter = self.Delimiters[i];
 

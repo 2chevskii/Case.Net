@@ -1,4 +1,6 @@
-﻿namespace Case.Net.Common.Conventions;
+﻿using Case.Net.Common.Entities;
+
+namespace Case.Net.Common.Conventions;
 
 public class MixedNamingConvention : INamingConvention
 {

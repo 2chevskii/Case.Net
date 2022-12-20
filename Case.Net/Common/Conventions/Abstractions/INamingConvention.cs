@@ -1,4 +1,6 @@
-﻿namespace Case.Net.Common.Conventions;
+﻿using Case.Net.Common.Entities;
+
+namespace Case.Net.Common.Conventions;
 
 /// <summary>
 /// Contains methods used to parse and convert strings from/to a certain naming style
