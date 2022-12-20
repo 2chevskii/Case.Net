@@ -4,5 +4,5 @@ namespace Case.Net.Emit.Words;
 
 public interface IWordEmitter
 {
-    string EmitWord(CasedString source, int wordIndex);
+    bool EmitWord(CasedString source, int wordIndex, out ReadOnlySpan<char> wordBuffer);
 }

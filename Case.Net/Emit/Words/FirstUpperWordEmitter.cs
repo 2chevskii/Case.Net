@@ -4,11 +4,11 @@ using Case.Net.Extensions;
 
 namespace Case.Net.Emit.Words;
 
-public class AllLowerWordEmitter : IWordEmitter
+public class FirstUpperWordEmitter : IWordEmitter
 {
     public readonly ISanitizer Sanitizer;
 
-    public AllLowerWordEmitter(ISanitizer sanitizer) { Sanitizer = sanitizer; }
+    public FirstUpperWordEmitter(ISanitizer sanitizer) { Sanitizer = sanitizer; }
 
     public bool EmitWord(CasedString source, int wordIndex, out ReadOnlySpan<char> wordBuffer)
     {
@@ -27,7 +27,9 @@ public class AllLowerWordEmitter : IWordEmitter
 
         wordBuffer = targetBuffer;
 
-        sanitizedWord.ToLowerInvariant( targetBuffer );
+        targetBuffer[0] = char.ToUpperInvariant( sanitizedWord[0] );
+
+        if ( targetBuffer.Length > 1 ) { sanitizedWord[1..].ToLowerInvariant( targetBuffer[1..] ); }
 
         return true;
     }

@@ -45,4 +45,30 @@ public static class ReadOnlySpanExtensions
             else { wordStart = wordEnd + 1; }
         }
     }
+
+    public static ReadOnlySpan<char> ToLowerInvariant(this ReadOnlySpan<char> self)
+    {
+        Span<char> target = new Span<char>( GC.AllocateUninitializedArray<char>( self.Length ) );
+
+        /*for ( int i = 0; i < self.Length; i++ ) { target[i] = char.ToLowerInvariant( self[i] ); }
+
+        return target;*/
+
+        self.ToLowerInvariant( target );
+
+        return target;
+    }
+
+    public static ReadOnlySpan<char> ToUpperInvariant(this ReadOnlySpan<char> self)
+    {
+        Span<char> target = new Span<char>( GC.AllocateUninitializedArray<char>( self.Length ) );
+
+        /*for ( int i = 0; i < self.Length; i++ ) { target[i] = char.ToUpperInvariant( self[i] ); }
+
+        return target;*/
+
+        self.ToUpperInvariant( target );
+
+        return self;
+    }
 }

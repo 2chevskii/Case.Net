@@ -1,23 +1,19 @@
 ﻿using Case.Net.Common;
-using Case.Net.Extensions;
+using Case.Net.Emit.Sanitizers;
 
 namespace Case.Net.Emit.Words;
 
 public class PascalCaseWordEmitter : IWordEmitter
 {
-    public static readonly PascalCaseWordEmitter Instance = new ();
+    private readonly FirstUpperWordEmitter _firstUpperWordEmitter;
 
-    public string EmitWord(CasedString source, int wordIndex)
+    public PascalCaseWordEmitter()
     {
-        var    word      = source.WordAt( wordIndex );
-        char[] wordChars = word.ToCharArray();
-        wordChars[0] = char.ToUpperInvariant( wordChars[0] );
+        _firstUpperWordEmitter = new FirstUpperWordEmitter(new LetterOrDigitSanitizer());
+    }
 
-        for ( int i = 1; i < word.Length; i++ )
-        {
-            wordChars[i] = char.ToLowerInvariant( wordChars[i] );
-        }
-
-        return new string( wordChars );
+    public bool EmitWord(CasedString source, int wordIndex, out ReadOnlySpan<char> wordBuffer)
+    {
+        return _firstUpperWordEmitter.EmitWord( source, wordIndex, out wordBuffer );
     }
 }

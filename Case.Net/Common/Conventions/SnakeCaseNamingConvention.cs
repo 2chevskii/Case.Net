@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-using Case.Net.Extensions;
+﻿using Case.Net.Extensions;
 using Case.Net.Parsing;
 
 namespace Case.Net.Common.Conventions;

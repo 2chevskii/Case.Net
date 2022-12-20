@@ -2,9 +2,5 @@
 
 public interface ISanitizer
 {
-    string SanitizeWord(string word);
-
-    string SanitizePrefix(string prefix);
-
-    string SanitizeSuffix(string suffix);
+    ReadOnlySpan<char> Sanitize(ReadOnlySpan<char> input);
 }

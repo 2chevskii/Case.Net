@@ -1,16 +1,28 @@
 ﻿using Case.Net.Common;
-using Case.Net.Extensions;
+using Case.Net.Emit.Sanitizers;
 
 namespace Case.Net.Emit.Words;
 
 public class CamelCaseWordEmitter : IWordEmitter
 {
-    public static readonly CamelCaseWordEmitter Instance = new ();
+    private readonly FirstUpperWordEmitter _firstUpperWordEmitter;
+    private readonly AllLowerWordEmitter   _allLowerWordEmitter;
 
-    public string EmitWord(CasedString source, int wordIndex)
+    public CamelCaseWordEmitter()
     {
-        if ( wordIndex is 0 ) { return source.WordAt( wordIndex ).ToLowerInvariant(); }
+        var sanitizer = new LetterOrDigitSanitizer();
 
-        return PascalCaseWordEmitter.Instance.EmitWord( source, wordIndex );
+        _firstUpperWordEmitter = new ( sanitizer );
+        _allLowerWordEmitter   = new ( sanitizer );
+    }
+
+    public bool EmitWord(CasedString source, int wordIndex, out ReadOnlySpan<char> wordBuffer)
+    {
+        if ( wordIndex is 0 )
+        {
+            return _allLowerWordEmitter.EmitWord( source, wordIndex, out wordBuffer );
+        }
+
+        return _firstUpperWordEmitter.EmitWord( source, wordIndex, out wordBuffer );
     }
 }

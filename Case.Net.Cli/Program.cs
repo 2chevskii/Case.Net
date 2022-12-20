@@ -38,5 +38,9 @@ public class Program
         var kebabCasedString = kebabCaseNamingConvention.Parse( Strings.KebabCase );
 
         Console.WriteLine( kebabCasedString.ToDebugString() );
+
+        Console.WriteLine( camelCaseConvention.Convert( kebabCasedString ).ToDebugString() );
+
+        Console.WriteLine( pascalCaseNamingConvention.Convert( snakeCasedString ).ToDebugString() );
     }
 }
