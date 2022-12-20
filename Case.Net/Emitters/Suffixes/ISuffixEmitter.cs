@@ -1,4 +1,4 @@
-﻿namespace Case.Net.Emit.Suffixes;
+﻿namespace Case.Net.Emitters.Suffixes;
 
 public interface ISuffixEmitter
 {

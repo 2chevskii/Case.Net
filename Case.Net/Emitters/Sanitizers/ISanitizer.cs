@@ -1,4 +1,4 @@
-﻿namespace Case.Net.Emit.Sanitizers;
+﻿namespace Case.Net.Emitters.Sanitizers;
 
 public interface ISanitizer
 {

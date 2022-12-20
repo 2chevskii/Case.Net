@@ -1,7 +1,7 @@
 ﻿using Case.Net.Common;
-using Case.Net.Emit.Sanitizers;
+using Case.Net.Emitters.Sanitizers;
 
-namespace Case.Net.Emit.Words;
+namespace Case.Net.Emitters.Words;
 
 public class CamelCaseWordEmitter : IWordEmitter
 {

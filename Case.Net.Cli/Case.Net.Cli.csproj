@@ -11,8 +11,4 @@
       <ProjectReference Include="..\Case.Net\Case.Net.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="Sprache" Version="3.0.0-develop-00049" />
-    </ItemGroup>
-
 </Project>

@@ -1,4 +1,4 @@
-﻿namespace Case.Net.Emit.Prefixes;
+﻿namespace Case.Net.Emitters.Prefixes;
 
 public class NoPrefixEmitter : IPrefixEmitter
 {

@@ -2,11 +2,11 @@
 
 namespace Case.Net.Parsing;
 
-public class DelimiterLowerCaseParser : IWordParser
+public class DelimiterUpperCaseParser : IWordParser
 {
     public readonly char Delimiter;
 
-    public DelimiterLowerCaseParser(char delimiter) { Delimiter = delimiter; }
+    public DelimiterUpperCaseParser(char delimiter) { Delimiter = delimiter; }
 
     public bool TryParse(ReadOnlySpan<char> input, out IReadOnlyList<WordPosition> words)
     {
@@ -24,7 +24,7 @@ public class DelimiterLowerCaseParser : IWordParser
         {
             char current = input[i];
 
-            if ( !current.IsLower() && !current.IsDigit() )
+            if ( !current.IsUpper() && !current.IsDigit() )
             {
                 return false;
             }

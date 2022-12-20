@@ -1,6 +1,6 @@
-﻿using Case.Net.Emit.Delimiters;
-using Case.Net.Emit.Sanitizers;
-using Case.Net.Emit.Words;
+﻿using Case.Net.Emitters.Delimiters;
+using Case.Net.Emitters.Sanitizers;
+using Case.Net.Emitters.Words;
 using Case.Net.Extensions;
 using Case.Net.Parsing;
 

@@ -1,6 +1,6 @@
 ﻿using Case.Net.Common;
 
-namespace Case.Net.Emit.Words;
+namespace Case.Net.Emitters.Words;
 
 public interface IWordEmitter
 {

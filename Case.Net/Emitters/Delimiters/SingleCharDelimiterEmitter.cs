@@ -1,4 +1,4 @@
-﻿namespace Case.Net.Emit.Delimiters;
+﻿namespace Case.Net.Emitters.Delimiters;
 
 public class SingleCharDelimiterEmitter : IDelimiterEmitter
 {

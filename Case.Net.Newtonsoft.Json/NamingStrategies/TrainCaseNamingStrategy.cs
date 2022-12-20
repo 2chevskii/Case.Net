@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Serialization;
 
-namespace Case.Net.Newtonsoft.Json.NamingStrategies;
+namespace Newtonsoft.Json;
 
 public class TrainCaseNamingStrategy : NamingStrategy
 {

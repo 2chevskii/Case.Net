@@ -1,8 +1,8 @@
 ﻿using Case.Net.Common;
-using Case.Net.Emit.Sanitizers;
+using Case.Net.Emitters.Sanitizers;
 using Case.Net.Extensions;
 
-namespace Case.Net.Emit.Words;
+namespace Case.Net.Emitters.Words;
 
 public class FirstUpperWordEmitter : IWordEmitter
 {

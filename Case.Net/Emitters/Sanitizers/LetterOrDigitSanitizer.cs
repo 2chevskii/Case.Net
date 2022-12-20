@@ -1,6 +1,6 @@
 ﻿using Case.Net.Extensions;
 
-namespace Case.Net.Emit.Sanitizers;
+namespace Case.Net.Emitters.Sanitizers;
 
 public class LetterOrDigitSanitizer : ISanitizer
 {

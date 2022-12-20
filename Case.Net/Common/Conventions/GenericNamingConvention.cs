@@ -1,7 +1,7 @@
-﻿using Case.Net.Emit.Delimiters;
-using Case.Net.Emit.Prefixes;
-using Case.Net.Emit.Suffixes;
-using Case.Net.Emit.Words;
+﻿using Case.Net.Emitters.Delimiters;
+using Case.Net.Emitters.Prefixes;
+using Case.Net.Emitters.Suffixes;
+using Case.Net.Emitters.Words;
 using Case.Net.Extensions;
 using Case.Net.Parsing;
 
