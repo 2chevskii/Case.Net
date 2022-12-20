@@ -35,7 +35,7 @@ public class CamelCaseNamingConvention : NamingConvention
             }
         }
 
-        output = new CasedString( string.Empty, string.Empty, words, Array.Empty<string>(), this );
+        output = new CasedString( string.Empty, string.Empty, words, EmptyArray<Delimiter>(), this );
 
         return true;
     }

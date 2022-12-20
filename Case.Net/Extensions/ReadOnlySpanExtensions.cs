@@ -1,5 +1,6 @@
 ﻿using System.Xml.Schema;
 
+using Case.Net.Common;
 using Case.Net.Parsing;
 
 namespace Case.Net.Extensions;
@@ -15,11 +16,11 @@ public static class ReadOnlySpanExtensions
         this ReadOnlySpan<char> input,
         IReadOnlyList<WordPosition> wordPositions,
         out IReadOnlyList<string> words,
-        out IReadOnlyList<string> delimiters
+        out IReadOnlyList<Delimiter> delimiters
     )
     {
         var wordsRw      = new List<string>();
-        var delimitersRw = new List<string>();
+        var delimitersRw = new List<Delimiter>();
         words      = wordsRw;
         delimiters = delimitersRw;
 
@@ -39,7 +40,7 @@ public static class ReadOnlySpanExtensions
                 var delimiterLength = delimiterEnd - delimiterStart + 1;
 
                 var delimiterSlice = input.Slice( delimiterStart, delimiterLength );
-                delimitersRw.Add( delimiterSlice.ToString() );
+                delimitersRw.Add( new Delimiter( i, delimiterSlice.ToString() ) );
                 wordStart = delimiterEnd + 1;
             }
             else { wordStart = wordEnd + 1; }

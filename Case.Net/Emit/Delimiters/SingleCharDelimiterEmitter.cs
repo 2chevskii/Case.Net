@@ -1,33 +1,45 @@
 ﻿namespace Case.Net.Emit.Delimiters;
 
-public sealed class SingleCharDelimiterEmitter : IDelimiterEmitter
+public class SingleCharDelimiterEmitter : IDelimiterEmitter
 {
-    private readonly string _strDelimiter;
-
     public char Delimiter { get; }
     public bool CheckWordEndStart { get; }
 
     public SingleCharDelimiterEmitter(char delimiter, bool checkWordEndStart = true)
     {
         Delimiter         = delimiter;
-        _strDelimiter     = delimiter.ToString();
         CheckWordEndStart = checkWordEndStart;
     }
 
-    public string EmitDelimiter(IReadOnlyList<string> words, int index)
+    public bool EmitDelimiter(
+        IReadOnlyList<string> words,
+        int index,
+        out ReadOnlySpan<char> delimiterBuffer
+    )
     {
         var current = words[index];
-        var next    = words[index + 1];
 
-        if ( CheckWordEndStart )
+        if ( CheckWordEndStart && current.EndsWith( Delimiter ) )
         {
-            if ( current[^1] == Delimiter )
-                return string.Empty;
+            delimiterBuffer = ReadOnlySpan<char>.Empty;
 
-            if ( next[0] == Delimiter )
-                return string.Empty;
+            return false;
         }
 
-        return _strDelimiter;
+        var next = words[index + 1];
+
+        if ( CheckWordEndStart && next.StartsWith( Delimiter ) )
+        {
+            delimiterBuffer = ReadOnlySpan<char>.Empty;
+
+            return false;
+        }
+
+        Span<char> buffer = new Span<char>( GC.AllocateUninitializedArray<char>( 1 ) );
+        buffer[0] = Delimiter;
+
+        delimiterBuffer = buffer;
+
+        return true;
     }
 }

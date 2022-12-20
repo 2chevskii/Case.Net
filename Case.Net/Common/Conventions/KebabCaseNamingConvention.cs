@@ -1,15 +1,71 @@
-﻿using Case.Net.Extensions;
+﻿using Case.Net.Emit.Delimiters;
+using Case.Net.Emit.Sanitizers;
+using Case.Net.Emit.Words;
+using Case.Net.Extensions;
 using Case.Net.Parsing;
 
 namespace Case.Net.Common.Conventions;
 
 public class KebabCaseNamingConvention : NamingConvention
 {
-    public KebabCaseNamingConvention() : base( "kebab-case" ) { }
+    private readonly AllLowerWordEmitter        _wordEmitter;
+    private readonly SingleCharDelimiterEmitter _delimiterEmitter;
+
+    public KebabCaseNamingConvention() : base( "kebab-case" )
+    {
+        _wordEmitter      = new AllLowerWordEmitter( new LetterOrDigitSanitizer() );
+        _delimiterEmitter = new SingleCharDelimiterEmitter( '-', false );
+        /*
+         * we dont really need to waste CPU cycles on checking word start/end
+         * before emitting the delimiter
+         * because sanitizer won't allow dash character anyway
+         */
+    }
 
     public override bool TryConvert(CasedString input, out CasedString output)
     {
-        throw new NotImplementedException();
+        if ( input.IsEmpty() )
+        {
+            output = CasedString.Empty;
+
+            return false;
+        }
+
+        List<string> words = new ();
+
+        for ( int i = 0; i < input.WordCount(); i++ )
+        {
+            if ( _wordEmitter.EmitWord( input, i, out var wordBuffer ) )
+            {
+                words.Add( wordBuffer.ToString() );
+            }
+        }
+
+        IReadOnlyList<Delimiter> delimiters;
+
+        if ( words.Count > 1 )
+        {
+            List<Delimiter> delimiterList = new ();
+
+            for ( int i = 0; i < words.Count - 1; i++ )
+            {
+                if ( _delimiterEmitter.EmitDelimiter(words, i, out var delimiterBuffer) )
+                {
+                    var delimiter = new Delimiter( i, delimiterBuffer.ToString() );
+                    delimiterList.Add( delimiter );
+                }
+            }
+
+            delimiters = delimiterList;
+        }
+        else
+        {
+            delimiters = Array.Empty<Delimiter>();
+        }
+
+        output = new CasedString( string.Empty, string.Empty, words, delimiters, this );
+
+        return true;
     }
 
     public override bool TryParse(ReadOnlySpan<char> input, out CasedString output)

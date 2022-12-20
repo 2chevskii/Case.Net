@@ -2,5 +2,5 @@
 
 public interface IDelimiterEmitter
 {
-    string EmitDelimiter(IReadOnlyList<string> words, int index);
+    bool EmitDelimiter(IReadOnlyList<string> words, int index, out ReadOnlySpan<char> delimiterBuffer);
 }

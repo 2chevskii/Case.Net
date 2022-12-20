@@ -42,5 +42,9 @@ public class Program
         Console.WriteLine( camelCaseConvention.Convert( kebabCasedString ).ToDebugString() );
 
         Console.WriteLine( pascalCaseNamingConvention.Convert( snakeCasedString ).ToDebugString() );
+
+        Console.WriteLine(kebabCaseNamingConvention.Convert(pascalCasedString).ToDebugString());
+
+        Console.WriteLine( snakeCaseNamingConvention.Convert( kebabCasedString ).ToDebugString() );
     }
 }
