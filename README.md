@@ -96,3 +96,13 @@ static void Main(string[] args) {
 - Improve unit test coverage
 - Better build/release flow on CI
 - Docs
+
+Build versioning:
+
+- Regular (non tag) builds:
+  - Appveyor version: {Case.Net.Core version}-{branch name}+{build number}
+  - Project version: {Project version}-{branch name}+{build number}
+- Tag builds:
+  - Appveyor version: {Tag version}+{build number}
+  - Released project version: {Tag version}+{build number}
+  - Other project versions: {do not build}

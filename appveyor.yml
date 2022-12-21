@@ -1,0 +1,35 @@
+image: Visual Studio 2022
+version: '{build}'
+init:
+  - ps: 'Write-Host "Build date: $(Get-Date)"'
+  - ps: 'Write-Host ".NET version: $(dotnet --version)"'
+  - ps: 'Write-Host (dotnet msbuild /version)'
+install:
+  - dotnet tool restore # Restore dotnet tools
+  - ps: dotnet cake --bootstrap # Restore cake dependencies
+  - ps: 'Write-Host "Cake version: $(dotnet cake --version)"' # Display cake version information
+  - dotnet cake -t update-appveyor-build-version
+  - dotnet cake -t case.net.core:restore
+  - dotnet cake -t case.net.core.test.unit:restore
+build_script:
+  - dotnet cake -t case.net.core:patch-version
+  - dotnet cake -e --target case.net.core:compile -c Release
+  - dotnet cake -e --target case.net.core.test.unit:compile -c Release
+test_script:
+  - dotnet cake -e -t case.net.core:test/unit -c Release
+after_test:
+  - dotnet cake -e -t case.net.core:artifacts/lib -c Release
+  - dotnet cake -e -t case.net.core:artifacts/nuget-pack -c Release
+for:
+  - branches:
+      only:
+        - /case.net/core//
+    before_build:
+      - dotnet cake -t case.net.core:release/patch-version
+      - echo "Test tag build"
+    on_success:
+      # - dotnet cake -e -t case.net.core:release/commit
+environment:
+  global:
+    GITHUB_TOKEN:
+      secure: uzBaHamzFvXwXrlgceukQUOvuO4MWBAttQvsqMaTgVNxh8u5O0jAfbyPAHC6QE8Bf0biJ4sSeN/TVsuKQ9tQusZzC66iA3wH4TegpN+/GxtLV/m/uKJ1mRN60qXB56tG

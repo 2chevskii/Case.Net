@@ -2,15 +2,19 @@
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Case.Net", "Case.Net\Case.Net.csproj", "{3FC4C644-4FBA-4681-9D58-17987BBCA5F7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Case.Net.Core", "src\Case.Net.Core\Case.Net.Core.csproj", "{3FC4C644-4FBA-4681-9D58-17987BBCA5F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Case.Net.Cli", "Case.Net.Cli\Case.Net.Cli.csproj", "{DD787EE7-90DA-491C-9A30-60DB8A200F23}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Case.Net.Cli", "src\Case.Net.Cli\Case.Net.Cli.csproj", "{DD787EE7-90DA-491C-9A30-60DB8A200F23}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Case.Net.System.Text.Json", "Case.Net.System.Text.Json\Case.Net.System.Text.Json.csproj", "{7ADA4E26-9F70-4341-8920-87F66608BA90}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Case.Net.System.Text.Json", "src\Case.Net.System.Text.Json\Case.Net.System.Text.Json.csproj", "{7ADA4E26-9F70-4341-8920-87F66608BA90}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Case.Net.Newtonsoft.Json", "Case.Net.Newtonsoft.Json\Case.Net.Newtonsoft.Json.csproj", "{092D68E7-8D9F-4095-924C-8F36DB32738E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Case.Net.Newtonsoft.Json", "src\Case.Net.Newtonsoft.Json\Case.Net.Newtonsoft.Json.csproj", "{092D68E7-8D9F-4095-924C-8F36DB32738E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Case.Net.Test", "Case.Net.Test\Case.Net.Test.csproj", "{A36F84C6-82DA-4994-92A1-432EE3F1DF8A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Case.Net.Core.Test.Unit", "tests\unit\Case.Net.Core.Test.Unit\Case.Net.Core.Test.Unit.csproj", "{A36F84C6-82DA-4994-92A1-432EE3F1DF8A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{123D10B3-1103-4589-ACE7-F4A5948CD07E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6848F617-1DBB-4490-B713-B73A486A5AA3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,5 +45,12 @@ Global
 		{A36F84C6-82DA-4994-92A1-432EE3F1DF8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A36F84C6-82DA-4994-92A1-432EE3F1DF8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A36F84C6-82DA-4994-92A1-432EE3F1DF8A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A36F84C6-82DA-4994-92A1-432EE3F1DF8A} = {123D10B3-1103-4589-ACE7-F4A5948CD07E}
+		{DD787EE7-90DA-491C-9A30-60DB8A200F23} = {6848F617-1DBB-4490-B713-B73A486A5AA3}
+		{3FC4C644-4FBA-4681-9D58-17987BBCA5F7} = {6848F617-1DBB-4490-B713-B73A486A5AA3}
+		{092D68E7-8D9F-4095-924C-8F36DB32738E} = {6848F617-1DBB-4490-B713-B73A486A5AA3}
+		{7ADA4E26-9F70-4341-8920-87F66608BA90} = {6848F617-1DBB-4490-B713-B73A486A5AA3}
 	EndGlobalSection
 EndGlobal

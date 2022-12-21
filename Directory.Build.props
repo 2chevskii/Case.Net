@@ -1,0 +1,16 @@
+<Project>
+  <PropertyGroup>
+    <Authors>2CHEVSKII</Authors>
+    <Copyright>Copyright (c) 2022 2CHEVSKII</Copyright>
+    <GithubRepoUrl>https://github.com/2chevskii/Case.Net</GithubRepoUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>$(GithubRepoUrl)</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <License>LICENSE</License>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)\README.md" Pack="true" PackagePath="\" />
+    <None Include="$(MSBuildThisFileDirectory)\LICENSE" Pack="true" PackagePath="\" />
+  </ItemGroup>
+</Project>

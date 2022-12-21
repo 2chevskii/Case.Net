@@ -6,3 +6,5 @@ bin/
 obj/
 TestResults/
 tools/
+build/artifacts/
+*.DotSettings.user

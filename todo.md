@@ -1,0 +1,1 @@
+- Rename Case.Net project to Case.Net.Core
